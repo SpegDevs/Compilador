@@ -6,7 +6,8 @@ import java.nio.charset.Charset;
 public class FileManager {
     private BufferedReader fileBuffer = null;
     private boolean endOfFile;
-    private char nextChar;
+    private String line;
+    private int lineOffset;
 
     public void openFile(String fileName){
         try {
@@ -16,7 +17,7 @@ public class FileManager {
             e.printStackTrace();
             System.out.println("No se encontro el archivo del programa fuente indicado");
         }
-        readNextChar();
+        readNextLine();
     }
 
     public void closeFile(){
@@ -27,26 +28,45 @@ public class FileManager {
         }
     }
 
-    public void readNextChar(){
-        int read = -1;
+    private void readNextLine(){
+        String line = null;
         try {
-            read = fileBuffer.read();
+            line = fileBuffer.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (read == -1){
+        if (line == null){
             endOfFile = true;
+            this.line = "";
+            return;
         }
-        nextChar = (char)read;
+        if (line.length() > Parameters.MAX_LINE_LENGTH){
+            System.out.println("La linea se pasa del maximo de caracteres");
+            line.substring(0,Parameters.MAX_LINE_LENGTH);
+        }
+        this.line = line;
+        lineOffset = 0;
     }
 
-    public boolean hasNextChar(){
-        return endOfFile;
+    private char readNextChar(){
+        char character;
+        if (!endOfFile){
+            character = line.charAt(lineOffset);
+            lineOffset++;
+            if (lineOffset > line.length()-1){
+                readNextLine();
+            }
+        }else{
+            character = ' ';
+        }
+        return character;
     }
 
     public char getNextChar(){
-        char c = nextChar;
-        readNextChar();
-        return c;
+        return readNextChar();
+    }
+
+    public boolean isEndOfFile(){
+        return endOfFile;
     }
 }

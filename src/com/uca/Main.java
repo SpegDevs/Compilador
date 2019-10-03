@@ -8,6 +8,10 @@ public class Main {
             return;
         }
         String fileName = args[0];
+        compile(fileName);
+    }
+
+    private static void compile(String fileName){
         Scanner scanner = new Scanner();
         scanner.scan(fileName);
     }
