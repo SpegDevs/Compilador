@@ -4,6 +4,7 @@ public class Scanner {
 
     private Lexicon.Token token;
     private String lexeme;
+    private char c = ' ';
 
     private FileManager file;
 
@@ -21,7 +22,6 @@ public class Scanner {
     }
 
     public void getToken(){
-        char c = ' ';
         lexeme = "";
         token = null;
         while (c == ' ' || c == '\n' || c == '\t'){
@@ -51,6 +51,7 @@ public class Scanner {
 
         }else {
             token = Lexicon.getSpecialSymbolsTokens()[c];
+            c = getChar();
         }
     }
 

@@ -5,7 +5,7 @@ import static com.uca.Lexicon.Token.*;
 public class Lexicon {
 
     public enum Token{
-        NULL,IF,WHILE,VAR,PLUS,IDENTIFIER
+        NULL,IF,WHILE,VAR,PLUS,IDENTIFIER,SEMICOLON
     }
 
     private static String[] reservedWordsLexemes = new String[]{"if","while","var"};
@@ -17,6 +17,7 @@ public class Lexicon {
             specialSymbolsTokens[i] = NULL;
         }
         specialSymbolsTokens[43] = PLUS;
+        specialSymbolsTokens[59] = SEMICOLON;
     }
 
     public static String[] getReservedWordsLexemes() {
