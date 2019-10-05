@@ -38,32 +38,36 @@ public class Scanner {
             c = getChar();
         }
         if (Character.isLetter(c)){
-            lexeme = lexeme.concat(Character.toString(c));
+            addToLexeme(c);
             c = getChar();
             while (Character.isLetter(c)){
-                lexeme = lexeme.concat(Character.toString(c));
+                addToLexeme(c);
                 c = getChar();
             }
-            int i;
-            boolean isReservedWord = false;
-            for (i=0; i<Parameters.MAX_RESERVED_WORDS; i++){
-                if (Lexicon.getReservedWordsLexemes()[i].equals(lexeme)){
-                    isReservedWord = true;
-                    break;
-                }
-            }
-            if (isReservedWord) {
-                token = Lexicon.getReservedWordsTokens()[i];
+            if (isReservedWord()) {
+                token = Lexicon.getReservedWordToken(lexeme);
             }else{
                 token = Lexicon.Token.IDENTIFIER;
             }
         }else if (Character.isDigit(c)){
 
         }else {
-            lexeme = Character.toString(c);
             token = Lexicon.getSpecialSymbolsTokens()[c];
+            addToLexeme(c);
             c = getChar();
         }
+    }
+
+    public boolean isReservedWord(){
+        int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
+        if (index == -1){
+            return false;
+        }
+        return true;
+    }
+
+    public void addToLexeme(char character){
+        lexeme = lexeme.concat(Character.toString(c));
     }
 
     public char getChar(){
