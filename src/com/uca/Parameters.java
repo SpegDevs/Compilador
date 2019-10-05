@@ -7,16 +7,16 @@ public class Parameters {
     public static int MAX_DIGITS = 5;
     public static int MAX_IDENTIFIER_LENGTH = 10;
 
-    public static void loadFromFile(String filename){
-        FileManager file = new FileManager();
-        if (!file.fileExists(filename)) {
-            file.createFile(filename);
+    public static void loadFromFile(String fileName){
+        FileManager file = new FileManager(fileName);
+        if (!file.fileExists()) {
+            file.createFile();
             file.writeLine("MAX_LINE_LENGTH;"+MAX_LINE_LENGTH);
             file.writeLine("MAX_DIGITS;"+5);
             file.writeLine("MAX_IDENTIFIER_LENGTH;"+10);
             file.closeFile();
         }
-        file.openFile(filename);
+        file.openFile();
         String line;
         String[] lineArray;
         while (!file.isEndOfFile()){

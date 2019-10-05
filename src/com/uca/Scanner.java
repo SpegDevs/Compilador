@@ -6,19 +6,28 @@ public class Scanner {
     private String lexeme;
     private char c = ' ';
 
-    private FileManager file;
+    private FileManager inputFile;
+    private FileManager outputFile;
 
     public void scan(String fileName){
-        file = new FileManager();
-        file.openFile(fileName);
+        inputFile = new FileManager(fileName);
+        inputFile.openFile();
+
+        outputFile = new FileManager("output.txt");
+        outputFile.createFile();
+        outputFile.clearFile();
+
         System.out.println("Tokens:");
-        while (!file.isEndOfFile()){
+        while (!inputFile.isEndOfFile()){
             getToken();
             if (token != null) {
                 System.out.println(lexeme+" -> "+token.toString());
+                outputFile.writeLine(lexeme+" -> "+token.toString());
             }
         }
-        file.closeFile();
+
+        outputFile.closeFile();
+        inputFile.closeFile();
         System.out.println("Analisis lexicografico finalizado.");
     }
 
@@ -58,6 +67,6 @@ public class Scanner {
     }
 
     public char getChar(){
-        return file.getNextChar();
+        return inputFile.getNextChar();
     }
 }

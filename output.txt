@@ -1,0 +1,8 @@
+var -> VAR
+hola -> IDENTIFIER
+; -> SEMICOLON
+if -> IF
+while -> WHILE
++ -> PLUS
+ifwhile -> IDENTIFIER
+var -> VAR

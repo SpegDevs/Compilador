@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 
 public class FileManager {
+    private String fileName;
     private BufferedReader fileBuffer = null;
     private BufferedWriter fileWriter = null;
     private boolean endOfFile;
@@ -11,22 +12,26 @@ public class FileManager {
     private int lineOffset=0;
     private int lineCount=0;
 
-    public boolean fileExists(String fileName){
+    public FileManager(String fileName){
+        this.fileName = fileName;
+    }
+
+    public boolean fileExists(){
         File file = new File(fileName);
         return file.exists();
     }
 
-    public void createFile(String fileName){
+    public void createFile(){
         File file = new File(fileName);
         try {
             file.createNewFile();
-            openFile(fileName);
+            openFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void openFile(String fileName){
+    public void openFile(){
         try {
             File file = new File(fileName);
             fileBuffer = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
@@ -36,6 +41,15 @@ public class FileManager {
             System.out.println("Error: No se encontro el archivo "+fileName);
         }
         readNextLine();
+    }
+
+    public void clearFile(){
+        try {
+            PrintWriter writer = new PrintWriter(fileName);
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void closeFile(){
