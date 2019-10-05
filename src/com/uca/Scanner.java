@@ -34,7 +34,7 @@ public class Scanner {
     public void getToken(){
         lexeme = "";
         token = null;
-        while (c == ' ' || c == '\n' || c == '\t'){
+        while (Character.isWhitespace(c)){
             c = getChar();
         }
         if (Character.isLetter(c)){
@@ -58,7 +58,7 @@ public class Scanner {
         }
     }
 
-    public boolean isReservedWord(){
+    private boolean isReservedWord(){
         int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
         if (index == -1){
             return false;
@@ -66,11 +66,11 @@ public class Scanner {
         return true;
     }
 
-    public void addToLexeme(char character){
-        lexeme = lexeme.concat(Character.toString(c));
+    private void addToLexeme(char character){
+        lexeme = lexeme.concat(Character.toString(character));
     }
 
-    public char getChar(){
+    private char getChar(){
         return inputFile.getNextChar();
     }
 }
