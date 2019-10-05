@@ -12,6 +12,7 @@ public class Main {
     }
 
     private static void compile(String fileName){
+        Parameters.loadFromFile("parameters.txt");
         Lexicon.initializeSpecialSymbols();
         Scanner scanner = new Scanner();
         scanner.scan(fileName);

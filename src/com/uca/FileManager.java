@@ -5,23 +5,43 @@ import java.nio.charset.Charset;
 
 public class FileManager {
     private BufferedReader fileBuffer = null;
+    private BufferedWriter fileWriter = null;
     private boolean endOfFile;
-    private String line;
-    private int lineOffset;
+    private String line="";
+    private int lineOffset=0;
+    private int lineCount=0;
+
+    public boolean fileExists(String fileName){
+        File file = new File(fileName);
+        return file.exists();
+    }
+
+    public void createFile(String fileName){
+        File file = new File(fileName);
+        try {
+            file.createNewFile();
+            openFile(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void openFile(String fileName){
         try {
             File file = new File(fileName);
             fileBuffer = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
+            fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            System.out.println("No se encontro el archivo del programa fuente indicado");
+            System.out.println("Error: No se encontro el archivo "+fileName);
         }
         readNextLine();
     }
 
     public void closeFile(){
         try {
+            fileWriter.flush();
+            fileWriter.close();
             fileBuffer.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -29,6 +49,10 @@ public class FileManager {
     }
 
     private void readNextLine(){
+        if (fileBuffer == null){
+            endOfFile = true;
+            return;
+        }
         String line = null;
         try {
             line = fileBuffer.readLine();
@@ -41,21 +65,23 @@ public class FileManager {
             return;
         }
         if (line.length() > Parameters.MAX_LINE_LENGTH){
-            System.out.println("La linea se pasa del maximo de caracteres");
-            line.substring(0,Parameters.MAX_LINE_LENGTH);
+            System.out.println("Error La linea "+(lineCount+1)+" se pasa del maximo de caracteres.");
+            line = line.substring(0,Parameters.MAX_LINE_LENGTH);
         }
         this.line = line;
         lineOffset = 0;
+        lineCount++;
     }
 
     private char readNextChar(){
         char character;
         if (!endOfFile){
-            character = line.charAt(lineOffset);
-            lineOffset++;
             if (lineOffset > line.length()-1){
                 readNextLine();
+                return '\n';
             }
+            character = line.charAt(lineOffset);
+            lineOffset++;
         }else{
             character = ' ';
         }
@@ -64,6 +90,21 @@ public class FileManager {
 
     public char getNextChar(){
         return readNextChar();
+    }
+
+    public String getNextLine(){
+        String line = this.line;
+        readNextLine();
+        return line;
+    }
+
+    public void writeLine(String line){
+        try {
+            fileWriter.write(line);
+            fileWriter.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isEndOfFile(){

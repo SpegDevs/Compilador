@@ -11,10 +11,11 @@ public class Scanner {
     public void scan(String fileName){
         file = new FileManager();
         file.openFile(fileName);
+        System.out.println("Tokens:");
         while (!file.isEndOfFile()){
             getToken();
             if (token != null) {
-                System.out.println(token.toString());
+                System.out.println(lexeme+" -> "+token.toString());
             }
         }
         file.closeFile();
@@ -50,15 +51,13 @@ public class Scanner {
         }else if (Character.isDigit(c)){
 
         }else {
+            lexeme = Character.toString(c);
             token = Lexicon.getSpecialSymbolsTokens()[c];
             c = getChar();
         }
     }
 
     public char getChar(){
-        if (file.isEndOfFile()){
-           return ' ';
-        }
         return file.getNextChar();
     }
 }
