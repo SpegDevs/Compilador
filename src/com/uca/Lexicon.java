@@ -8,11 +8,14 @@ import static com.uca.Lexicon.Token.*;
 public class Lexicon {
 
     public enum Token{
-        NULL,IF,WHILE,VAR,PLUS,IDENTIFIER,SEMICOLON
+        NULL,IF,WHILE,VAR,PLUS,IDENTIFIER,SEMICOLON,INTEGER,STRING,DECIMAL,CHARACTER,BOOLEAN,ARRAY,IN,OUT,LENGTH, PALINDROME,
+        CONCURRENCIA,MAYORA,RANDOM,FACTORIAL,POW,CEIL,FLOOR,RETURN,MUL,DIV,PARINI,PARFIN,LLAINI,LLAFIN,CORINI,CORFIN,POINT,COMA,SQUOTE,DQUOTE,
+        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR
     }
 
     private static HashMap<String,Token> reservedWordsTokens = new HashMap<>();
-    private static String[] reservedWordsLexemes = new String[]{"if","while","var"};
+    private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec","char",
+            "boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
     private static Token[] specialSymbolsTokens = new Token[255];
 
     public static void init(){
@@ -25,6 +28,26 @@ public class Lexicon {
         reservedWordsTokens.put("if",IF);
         reservedWordsTokens.put("while",WHILE);
         reservedWordsTokens.put("var",VAR);
+        reservedWordsTokens.put("ifnot",IFNOT);
+        reservedWordsTokens.put("dowhile",DOWHILE);
+        reservedWordsTokens.put("int",INTEGER);
+        reservedWordsTokens.put("str",STRING);
+        reservedWordsTokens.put("dec",DECIMAL);
+        reservedWordsTokens.put("char",CHARACTER);
+        reservedWordsTokens.put("boo",BOOLEAN);
+        reservedWordsTokens.put("arr",ARRAY);
+        reservedWordsTokens.put("in",IN);
+        reservedWordsTokens.put("out",OUT);
+        reservedWordsTokens.put("Length",LENGTH);
+        reservedWordsTokens.put("Pal",PALINDROME);
+        reservedWordsTokens.put("Noc",CONCURRENCIA);
+        reservedWordsTokens.put("MayorA",MAYORA);
+        reservedWordsTokens.put("RandomI",RANDOM);
+        reservedWordsTokens.put("Factorias",FACTORIAL);
+        reservedWordsTokens.put("Pow",POW);
+        reservedWordsTokens.put("Ceil",CEIL);
+        reservedWordsTokens.put("Floor",FLOOR);
+        reservedWordsTokens.put("ret",RETURN);
     }
 
     private static void initializeSpecialSymbols(){
@@ -33,6 +56,23 @@ public class Lexicon {
         }
         specialSymbolsTokens[43] = PLUS;
         specialSymbolsTokens[59] = SEMICOLON;
+        specialSymbolsTokens[42] = MUL;
+        specialSymbolsTokens[47] = DIV;
+        specialSymbolsTokens[40] = PARINI;
+        specialSymbolsTokens[41] = PARFIN;
+        specialSymbolsTokens[91] = CORINI;
+        specialSymbolsTokens[93] = CORFIN;
+        specialSymbolsTokens[123] = LLAINI;
+        specialSymbolsTokens[125] = LLAFIN;
+        specialSymbolsTokens[46] = POINT;
+        specialSymbolsTokens[44] = COMA;
+        specialSymbolsTokens[39] = SQUOTE;
+        specialSymbolsTokens[34] = DQUOTE;
+        specialSymbolsTokens[45] = GUION;
+        specialSymbolsTokens[95] = GUIONB;
+        specialSymbolsTokens[61] = EQUAL;
+        specialSymbolsTokens[60] = MENOR;
+        specialSymbolsTokens[62] = MAYOR;
     }
 
     public static String[] getReservedWordsLexemes() {
