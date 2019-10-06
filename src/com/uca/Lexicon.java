@@ -10,12 +10,11 @@ public class Lexicon {
     public enum Token{
         NULL,IF,WHILE,VAR,PLUS,IDENTIFIER,SEMICOLON,INTEGER,STRING,DECIMAL,CHARACTER,BOOLEAN,ARRAY,IN,OUT,LENGTH, PALINDROME,
         CONCURRENCIA,MAYORA,RANDOM,FACTORIAL,POW,CEIL,FLOOR,RETURN,MUL,DIV,PARINI,PARFIN,LLAINI,LLAFIN,CORINI,CORFIN,POINT,COMA,SQUOTE,DQUOTE,
-        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR
+        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR,DIGIT
     }
 
     private static HashMap<String,Token> reservedWordsTokens = new HashMap<>();
-    private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec","char",
-            "boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
+    private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec","char","boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
     private static Token[] specialSymbolsTokens = new Token[255];
 
     public static void init(){
@@ -43,7 +42,7 @@ public class Lexicon {
         reservedWordsTokens.put("Noc",CONCURRENCIA);
         reservedWordsTokens.put("MayorA",MAYORA);
         reservedWordsTokens.put("RandomI",RANDOM);
-        reservedWordsTokens.put("Factorias",FACTORIAL);
+        reservedWordsTokens.put("Factorial",FACTORIAL);
         reservedWordsTokens.put("Pow",POW);
         reservedWordsTokens.put("Ceil",CEIL);
         reservedWordsTokens.put("Floor",FLOOR);
@@ -54,25 +53,25 @@ public class Lexicon {
         for (int i=0; i<255; i++){
             specialSymbolsTokens[i] = NULL;
         }
-        specialSymbolsTokens[43] = PLUS;
-        specialSymbolsTokens[59] = SEMICOLON;
-        specialSymbolsTokens[42] = MUL;
-        specialSymbolsTokens[47] = DIV;
+        specialSymbolsTokens[34] = DQUOTE;
+        specialSymbolsTokens[39] = SQUOTE;
         specialSymbolsTokens[40] = PARINI;
         specialSymbolsTokens[41] = PARFIN;
+        specialSymbolsTokens[42] = MUL;
+        specialSymbolsTokens[43] = PLUS;
+        specialSymbolsTokens[44] = COMA;
+        specialSymbolsTokens[45] = GUION;
+        specialSymbolsTokens[46] = POINT;
+        specialSymbolsTokens[47] = DIV;
+        specialSymbolsTokens[59] = SEMICOLON;
+        specialSymbolsTokens[60] = MENOR;
+        specialSymbolsTokens[61] = EQUAL;
+        specialSymbolsTokens[62] = MAYOR;
         specialSymbolsTokens[91] = CORINI;
+        specialSymbolsTokens[95] = GUIONB;
         specialSymbolsTokens[93] = CORFIN;
         specialSymbolsTokens[123] = LLAINI;
         specialSymbolsTokens[125] = LLAFIN;
-        specialSymbolsTokens[46] = POINT;
-        specialSymbolsTokens[44] = COMA;
-        specialSymbolsTokens[39] = SQUOTE;
-        specialSymbolsTokens[34] = DQUOTE;
-        specialSymbolsTokens[45] = GUION;
-        specialSymbolsTokens[95] = GUIONB;
-        specialSymbolsTokens[61] = EQUAL;
-        specialSymbolsTokens[60] = MENOR;
-        specialSymbolsTokens[62] = MAYOR;
     }
 
     public static String[] getReservedWordsLexemes() {

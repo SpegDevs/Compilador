@@ -31,16 +31,16 @@ public class Scanner {
         System.out.println("Analisis lexicografico finalizado.");
     }
 
-    public void getToken(){
+    private void getToken(){
         lexeme = "";
         token = null;
         while (Character.isWhitespace(c)){
             c = getChar();
         }
-        if (Character.isLetter(c)){
+        if (Character.isLetter(c) || c=='_'){
             addToLexeme(c);
             c = getChar();
-            while (Character.isLetter(c)){
+            while (Character.isLetter(c) || Character.isDigit(c)){
                 addToLexeme(c);
                 c = getChar();
             }
@@ -50,7 +50,27 @@ public class Scanner {
                 token = Lexicon.Token.IDENTIFIER;
             }
         }else if (Character.isDigit(c)){
-
+            boolean decimal=false;
+            addToLexeme(c);
+            c = getChar();
+            while (Character.isDigit(c)){
+                addToLexeme(c);
+                c = getChar();
+            }
+            if (c == '.'){
+                decimal = true;
+                addToLexeme(c);
+                c = getChar();
+                while (Character.isDigit(c)){
+                    addToLexeme(c);
+                    c = getChar();
+                }
+            }
+            if (decimal){
+                token = Lexicon.Token.DECIMAL;
+            }else {
+                token = Lexicon.Token.DIGIT;
+            }
         }else {
             token = Lexicon.getSpecialSymbolsTokens()[c];
             addToLexeme(c);
@@ -59,8 +79,11 @@ public class Scanner {
     }
 
     private boolean isReservedWord(){
-        int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
+        /*int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
         if (index == -1){
+            return false;
+        }*/
+        if (Lexicon.getReservedWordToken(lexeme) == null){
             return false;
         }
         return true;
