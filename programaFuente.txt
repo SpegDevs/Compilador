@@ -1,11 +1,17 @@
 .-int Mamarre(dec valor){
     .|. comentario
     ret Ceil(valor);
-}
+}-.
 HolaMundo = out("hola mundo");
--.
-.| hola
-hola1234
-56783
-^
-5.
+>
+<
+;
+>=
+<=
+.6
+6.677
+667.8
+&
+.
+/
+*

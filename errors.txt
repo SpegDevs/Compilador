@@ -1,5 +1,2 @@
-Error: Comentario mal escrito. Linea: 7
-Error: Identificador "hola1234" sobrepasa el maximo de caracteres validos (5). Linea: 9
-Error: Numero "56783" sobrepasa el maximo de digitos validos (3). Linea: 10
-Error: No se reconoce el simbolo "^" Linea: 10
-Error: Decimal "5." mal escrito. Linea: 11
+Error: Identificador "HolaMundo" sobrepasa el maximo de caracteres validos (5). Linea: 5
+Error: No se reconoce el simbolo "&" Linea: 14

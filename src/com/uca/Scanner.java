@@ -37,7 +37,7 @@ public class Scanner {
         if (Character.isLetter(c) || c=='_'){
             addToLexeme(c);
             c = getChar();
-            while (Character.isLetter(c) || Character.isDigit(c)){
+            while (c == '_' || Character.isLetter(c) || Character.isDigit(c)){
                 addToLexeme(c);
                 c = getChar();
             }
@@ -48,7 +48,11 @@ public class Scanner {
                     ErrorLog.logError("Error: Identificador \""+lexeme+"\" sobrepasa el maximo de caracteres validos ("+Parameters.MAX_IDENTIFIER_LENGTH+"). Linea: "+inputFile.getLineCount());
                     lexeme = lexeme.substring(0,Parameters.MAX_IDENTIFIER_LENGTH);
                 }
-                token = Lexicon.Token.IDENTIFIER;
+                if (lexeme.equals("_")){
+                    token = Lexicon.Token.GUIONB;
+                }else {
+                    token = Lexicon.Token.IDENTIFIER;
+                }
             }
         }else if (Character.isDigit(c)){
             boolean decimal=false;
@@ -120,12 +124,34 @@ public class Scanner {
             }
         }
         else {
-            token = Lexicon.getSpecialSymbolsTokens()[c];
-            if (token == Lexicon.Token.NULL){
-                ErrorLog.logError("Error: No se reconoce el simbolo \""+c+"\" Linea: "+inputFile.getLineCount());
+            if (c == '<'){
+                addToLexeme(c);
+                c = getChar();
+                if (c == '='){
+                    token = Lexicon.Token.MENORIGUAL;
+                    addToLexeme(c);
+                    c = getChar();
+                }else{
+                    token = Lexicon.Token.MENOR;
+                }
+            }else if (c == '>'){
+                addToLexeme(c);
+                c = getChar();
+                if (c == '='){
+                    addToLexeme(c);
+                    token = Lexicon.Token.MAYORIGUAL;
+                    c = getChar();
+                }else{
+                    token = Lexicon.Token.MAYOR;
+                }
+            }else {
+                token = Lexicon.getSpecialSymbolsTokens()[c];
+                if (token == Lexicon.Token.NULL) {
+                    ErrorLog.logError("Error: No se reconoce el simbolo \"" + c + "\" Linea: " + inputFile.getLineCount());
+                }
+                addToLexeme(c);
+                c = getChar();
             }
-            addToLexeme(c);
-            c = getChar();
         }
     }
 
