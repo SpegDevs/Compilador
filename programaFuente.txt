@@ -1,22 +1,14 @@
-var int hola;
-str dec char boo
-ifnot dowhile
-arr
-in out inout
-Length
-Pal Noc
-Mayora MayorA
-RandomI
-Factorial
-*,-
-Pow "Ceil" 'Floor' ret
-[]{}()
-_iden
-i53de6n
-12iden
-<>=
-54
-4 6
-456.22.2
-4.5
-6. .4
+.-int Mamarre(dec valor){
+    .|. comentario
+    ret Ceil(valor);
+}
+comentariooo
+oooo
+ooo
+ooo
+HolaMundo = out("hola mundo");
+-.
+.| hola
+22.33
+.4
+5.

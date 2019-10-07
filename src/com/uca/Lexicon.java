@@ -10,7 +10,7 @@ public class Lexicon {
     public enum Token{
         NULL,IF,WHILE,VAR,PLUS,IDENTIFIER,SEMICOLON,INTEGER,STRING,DECIMAL,CHARACTER,BOOLEAN,ARRAY,IN,OUT,LENGTH, PALINDROME,
         CONCURRENCIA,MAYORA,RANDOM,FACTORIAL,POW,CEIL,FLOOR,RETURN,MUL,DIV,PARINI,PARFIN,LLAINI,LLAFIN,CORINI,CORFIN,POINT,COMA,SQUOTE,DQUOTE,
-        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR,DIGIT
+        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR,DIGIT,BARRA
     }
 
     private static HashMap<String,Token> reservedWordsTokens = new HashMap<>();
@@ -71,6 +71,7 @@ public class Lexicon {
         specialSymbolsTokens[95] = GUIONB;
         specialSymbolsTokens[93] = CORFIN;
         specialSymbolsTokens[123] = LLAINI;
+        specialSymbolsTokens[124] = BARRA;
         specialSymbolsTokens[125] = LLAFIN;
     }
 
