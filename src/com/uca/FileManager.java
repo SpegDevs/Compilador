@@ -37,8 +37,9 @@ public class FileManager {
             fileBuffer = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
             fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), Charset.forName("UTF-8")));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            ErrorLog.logError("Error: No se encontro el archivo "+fileName);
+            //e.printStackTrace();
+            ErrorLog.logError("Error: No se encontro el archivo \""+fileName+"\"");
+            System.exit(0);
         }
         readNextLine();
     }

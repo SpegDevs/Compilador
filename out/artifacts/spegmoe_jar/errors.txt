@@ -1,0 +1,3 @@
+Error: No se reconoce el simbolo "^" Linea: 4
+Error: No se reconoce el simbolo "&" Linea: 4
+Error: Numero "123456" sobrepasa el maximo de digitos validos (5). Linea: 6

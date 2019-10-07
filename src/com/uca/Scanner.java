@@ -17,6 +17,7 @@ public class Scanner {
         outputFile.createFile();
         outputFile.clearFile();
 
+        System.out.println("Iniciando Analisis lexicografico.");
         System.out.println("Tokens:");
         while (!inputFile.isEndOfFile()){
             getToken();

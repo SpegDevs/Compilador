@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         if (args.length != 1){
-            System.out.println("No se ha proporcionado el nombre del programa fuente");
+            System.out.println("Error: No se ha proporcionado el nombre del programa fuente");
             return;
         }
         String fileName = args[0];
@@ -12,6 +12,7 @@ public class Main {
     }
 
     private static void compile(String fileName){
+        System.out.println("=== Compilador de SpegMoe ===");
         Parameters.loadFromFile("parameters.txt");
         ErrorLog.init();
         Lexicon.init();
