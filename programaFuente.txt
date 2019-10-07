@@ -2,13 +2,10 @@
     .|. comentario
     ret Ceil(valor);
 }
-comentariooo
-oooo
-ooo
-ooo
 HolaMundo = out("hola mundo");
 -.
 .| hola
-22.33
-.4
+hola1234
+56783
+^
 5.

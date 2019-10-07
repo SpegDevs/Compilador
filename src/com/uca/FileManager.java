@@ -38,7 +38,7 @@ public class FileManager {
             fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), Charset.forName("UTF-8")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            System.out.println("Error: No se encontro el archivo "+fileName);
+            ErrorLog.logError("Error: No se encontro el archivo "+fileName);
         }
         readNextLine();
     }
@@ -79,7 +79,7 @@ public class FileManager {
             return;
         }
         if (line.length() > Parameters.MAX_LINE_LENGTH){
-            System.out.println("Error La linea "+(lineCount+1)+" se pasa del maximo de caracteres.");
+            ErrorLog.logError("Error: La linea "+(lineCount+1)+" sobrepasa del maximo de caracteres ("+Parameters.MAX_LINE_LENGTH+").");
             line = line.substring(0,Parameters.MAX_LINE_LENGTH);
         }
         this.line = line;
@@ -123,5 +123,13 @@ public class FileManager {
 
     public boolean isEndOfFile(){
         return endOfFile;
+    }
+
+    public int getLineCount(){
+        return lineCount;
+    }
+
+    public int getCharCount(){
+        return lineOffset;
     }
 }

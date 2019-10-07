@@ -13,8 +13,10 @@ public class Main {
 
     private static void compile(String fileName){
         Parameters.loadFromFile("parameters.txt");
+        ErrorLog.init();
         Lexicon.init();
         Scanner scanner = new Scanner();
         scanner.scan(fileName);
+        ErrorLog.close();
     }
 }

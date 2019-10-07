@@ -1,5 +1,5 @@
 hola -> IDENTIFIER
-22.33 -> DECIMAL
-. -> POINT
-4 -> DIGIT
-5. -> DIGIT
+hola1 -> IDENTIFIER
+567 -> DIGIT
+^ -> NULL
+5. -> DECIMAL

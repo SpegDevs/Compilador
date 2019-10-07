@@ -44,6 +44,10 @@ public class Scanner {
             if (isReservedWord()) {
                 token = Lexicon.getReservedWordToken(lexeme);
             }else{
+                if (lexeme.length() > Parameters.MAX_IDENTIFIER_LENGTH){
+                    ErrorLog.logError("Error: Identificador \""+lexeme+"\" sobrepasa el maximo de caracteres validos ("+Parameters.MAX_IDENTIFIER_LENGTH+"). Linea: "+inputFile.getLineCount());
+                    lexeme = lexeme.substring(0,Parameters.MAX_IDENTIFIER_LENGTH);
+                }
                 token = Lexicon.Token.IDENTIFIER;
             }
         }else if (Character.isDigit(c)){
@@ -54,25 +58,28 @@ public class Scanner {
                 addToLexeme(c);
                 c = getChar();
             }
+            if (lexeme.length() > Parameters.MAX_DIGITS){
+                ErrorLog.logError("Error: Numero \""+lexeme+"\" sobrepasa el maximo de digitos validos ("+Parameters.MAX_DIGITS+"). Linea: "+inputFile.getLineCount());
+                lexeme = lexeme.substring(0,Parameters.MAX_DIGITS);
+            }
             if (c == '.'){
+                decimal = true;
                 addToLexeme(c);
                 c = getChar();
                 if (Character.isDigit(c)){
-                    decimal = true;
                     while (Character.isDigit(c)){
                         addToLexeme(c);
                         c = getChar();
                     }
                 }
                 else{
-                    System.out.println("Error: decimal mal escrito");
+                    ErrorLog.logError("Error: Decimal \""+lexeme+"\" mal escrito. Linea: "+inputFile.getLineCount());
                 }
             }
-            if (decimal){
+            if (decimal) {
                 token = Lexicon.Token.DECIMAL;
-            }else {
+            } else {
                 token = Lexicon.Token.DIGIT;
-
             }
         }else if (c == '.'){
             addToLexeme(c);
@@ -85,7 +92,7 @@ public class Scanner {
                         c = getChar();
                     }
                 }else{
-                    System.out.println("Error: comentario mal escrito");
+                    ErrorLog.logError("Error: Comentario mal escrito. Linea: "+inputFile.getLineCount());
                 }
             }else if (c == '-'){
                 c = getChar();
@@ -105,7 +112,7 @@ public class Scanner {
                     }
                 }
                 if (!comment){
-                    System.out.println("Error: comentario multilinea mal escrito");
+                    ErrorLog.logError("Error: Comentario multilinea mal escrito. Linea: "+inputFile.getLineCount());
                 }
                 c = getChar();
             }else{
@@ -114,6 +121,9 @@ public class Scanner {
         }
         else {
             token = Lexicon.getSpecialSymbolsTokens()[c];
+            if (token == Lexicon.Token.NULL){
+                ErrorLog.logError("Error: No se reconoce el simbolo \""+c+"\" Linea: "+inputFile.getLineCount());
+            }
             addToLexeme(c);
             c = getChar();
         }
