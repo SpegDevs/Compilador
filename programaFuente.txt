@@ -5,9 +5,10 @@
 _HolaMundo = in(hola);
 >=
 ==
+&
 _
 1;
-1.2;
+.9;
 <=
 if IF
 .

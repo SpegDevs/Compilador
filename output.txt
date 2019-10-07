@@ -1,4 +1,3 @@
-& -> NULL
 _HolaMundo -> IDENTIFIER
 = -> EQUAL
 in -> IN
@@ -8,10 +7,12 @@ hola -> IDENTIFIER
 ; -> SEMICOLON
 >= -> MAYORIGUAL
 == -> IGUALIGUAL
+& -> NULL
 _ -> GUIONB
 1 -> DIGIT
 ; -> SEMICOLON
-1.2 -> DECIMAL
+. -> POINT
+9 -> DIGIT
 ; -> SEMICOLON
 <= -> MENORIGUAL
 if -> IF
