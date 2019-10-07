@@ -3,15 +3,7 @@
     ret Ceil(valor);
 }-.
 HolaMundo = out("hola mundo");
->
-<
-;
 >=
 <=
-.6
-6.677
-667.8
-&
-.
-/
-*
+if IF
+ret

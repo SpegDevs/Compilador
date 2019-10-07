@@ -15,7 +15,7 @@ public class Tools {
         int left = 0;
         int right = array.length-1;
         while (left <= right){
-            int midpoint = left+(right-1)/2;
+            int midpoint = (left+right)/2;
             if (array[midpoint].equals(str)){
                 return midpoint;
             }

@@ -157,11 +157,8 @@ public class Scanner {
     }
 
     private boolean isReservedWord(){
-        /*int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
+        int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
         if (index == -1){
-            return false;
-        }*/
-        if (Lexicon.getReservedWordToken(lexeme) == null){
             return false;
         }
         return true;
