@@ -10,11 +10,12 @@ public class Lexicon {
     public enum Token{
         NULL,IF,WHILE,VAR,PLUS,IDENTIFIER,SEMICOLON,INTEGER,STRING,DECIMAL,CHARACTER,BOOLEAN,ARRAY,IN,OUT,LENGTH, PALINDROME,
         CONCURRENCIA,MAYORA,RANDOM,FACTORIAL,POW,CEIL,FLOOR,RETURN,MUL,DIV,PARINI,PARFIN,LLAINI,LLAFIN,CORINI,CORFIN,POINT,COMA,SQUOTE,DQUOTE,
-        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR,DIGIT,BARRA,MAYORIGUAL,MENORIGUAL
+        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR,DIGIT,BARRA,MAYORIGUAL,MENORIGUAL,IGUALIGUAL
     }
 
     private static HashMap<String,Token> reservedWordsTokens = new HashMap<>();
-    private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec","char","boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
+    private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec",
+            "char","boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
     private static Token[] specialSymbolsTokens = new Token[255];
 
     public static void init(){
