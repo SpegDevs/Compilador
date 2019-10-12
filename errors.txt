@@ -1,1 +1,0 @@
-Error: Identificador "HolaMundo" sobrepasa el maximo de caracteres validos (5). Linea: 5

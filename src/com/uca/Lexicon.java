@@ -3,18 +3,10 @@ package com.uca;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static com.uca.Lexicon.Token.*;
-
 public class Lexicon {
 
-    public enum Token{
-        NULL,IF,WHILE,VAR,PLUS,IDENTIFIER,SEMICOLON,INTEGER,STRING,DECIMAL,CHARACTER,BOOLEAN,ARRAY,IN,OUT,LENGTH, PALINDROME,
-        CONCURRENCIA,MAYORA,RANDOM,FACTORIAL,POW,CEIL,FLOOR,RETURN,MUL,DIV,PARINI,PARFIN,LLAINI,LLAFIN,CORINI,CORFIN,POINT,COMA,SQUOTE,DQUOTE,
-        GUION,GUIONB,IFNOT,DOWHILE,EQUAL,MENOR,MAYOR,DIGIT,BARRA,MAYORIGUAL,MENORIGUAL
-    }
-
-    private static HashMap<String,Token> reservedWordsTokens = new HashMap<>();
     private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec","char","boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
+    private static HashMap<String,Token> reservedWordsTokens = new HashMap<>();
     private static Token[] specialSymbolsTokens = new Token[255];
 
     public static void init(){
@@ -24,20 +16,25 @@ public class Lexicon {
 
     private static void initializeReservedWords(){
         Arrays.sort(reservedWordsLexemes);
-        reservedWordsTokens.put("if",IF);
-        reservedWordsTokens.put("while",WHILE);
-        reservedWordsTokens.put("var",VAR);
-        reservedWordsTokens.put("ifnot",IFNOT);
-        reservedWordsTokens.put("dowhile",DOWHILE);
-        reservedWordsTokens.put("int",INTEGER);
-        reservedWordsTokens.put("str",STRING);
-        reservedWordsTokens.put("dec",DECIMAL);
-        reservedWordsTokens.put("char",CHARACTER);
-        reservedWordsTokens.put("boo",BOOLEAN);
-        reservedWordsTokens.put("arr",ARRAY);
-        reservedWordsTokens.put("in",IN);
-        reservedWordsTokens.put("out",OUT);
-        reservedWordsTokens.put("Length",LENGTH);
+        reservedWordsTokens.put("int", new Token(Tag.INTEGER));
+        reservedWordsTokens.put("dec", new Token(Tag.DECIMAL));
+        reservedWordsTokens.put("str", new Token(Tag.STRING));
+        reservedWordsTokens.put("char", new Token(Tag.CHARACTER));
+        reservedWordsTokens.put("boo", new Token(Tag.BOOLEAN));
+        reservedWordsTokens.put("arr", new Token(Tag.ARRAY));
+
+        reservedWordsTokens.put("in", new Token(Tag.IN));
+        reservedWordsTokens.put("out", new Token(Tag.OUT));
+        reservedWordsTokens.put("if", new Token(Tag.IF));
+        reservedWordsTokens.put("while", new Token(Tag.WHILE));
+        reservedWordsTokens.put("ifnot", new Token(Tag.IFNOT));
+        reservedWordsTokens.put("do", new Token(Tag.DO));
+        reservedWordsTokens.put("for", new Token(Tag.FOR));
+        reservedWordsTokens.put("return", new Token(Tag.RETURN));
+        reservedWordsTokens.put("true", new Token(Tag.TRUE));
+        reservedWordsTokens.put("false", new Token(Tag.FALSE));
+
+        /*reservedWordsTokens.put("Length",LENGTH);
         reservedWordsTokens.put("Pal",PALINDROME);
         reservedWordsTokens.put("Noc",CONCURRENCIA);
         reservedWordsTokens.put("MayorA",MAYORA);
@@ -46,33 +43,33 @@ public class Lexicon {
         reservedWordsTokens.put("Pow",POW);
         reservedWordsTokens.put("Ceil",CEIL);
         reservedWordsTokens.put("Floor",FLOOR);
-        reservedWordsTokens.put("ret",RETURN);
+        reservedWordsTokens.put("ret",RETURN);*/
     }
 
     private static void initializeSpecialSymbols(){
         for (int i=0; i<255; i++){
-            specialSymbolsTokens[i] = NULL;
+            specialSymbolsTokens[i] = null;
         }
-        specialSymbolsTokens[34] = DQUOTE;
-        specialSymbolsTokens[39] = SQUOTE;
-        specialSymbolsTokens[40] = PARINI;
-        specialSymbolsTokens[41] = PARFIN;
-        specialSymbolsTokens[42] = MUL;
-        specialSymbolsTokens[43] = PLUS;
-        specialSymbolsTokens[44] = COMA;
-        specialSymbolsTokens[45] = GUION;
-        specialSymbolsTokens[46] = POINT;
-        specialSymbolsTokens[47] = DIV;
-        specialSymbolsTokens[59] = SEMICOLON;
-        specialSymbolsTokens[60] = MENOR;
-        specialSymbolsTokens[61] = EQUAL;
-        specialSymbolsTokens[62] = MAYOR;
-        specialSymbolsTokens[91] = CORINI;
-        specialSymbolsTokens[95] = GUIONB;
-        specialSymbolsTokens[93] = CORFIN;
-        specialSymbolsTokens[123] = LLAINI;
-        specialSymbolsTokens[124] = BARRA;
-        specialSymbolsTokens[125] = LLAFIN;
+        specialSymbolsTokens[34] = new Token(Tag.DOUBLE_QUOTE);
+        specialSymbolsTokens[39] = new Token(Tag.SINGLE_QUOTE);
+        specialSymbolsTokens[40] = new Token(Tag.L_PARENTHESIS);
+        specialSymbolsTokens[41] = new Token(Tag.R_PARENTHESIS);
+        specialSymbolsTokens[42] = new Token(Tag.MULTIPLICATION);
+        specialSymbolsTokens[43] = new Token(Tag.PLUS);
+        specialSymbolsTokens[44] = new Token(Tag.COLON);
+        specialSymbolsTokens[45] = new Token(Tag.DASH);
+        specialSymbolsTokens[46] = new Token(Tag.POINT);
+        specialSymbolsTokens[47] = new Token(Tag.DIVISION);
+        specialSymbolsTokens[59] = new Token(Tag.SEMICOLON);
+        specialSymbolsTokens[60] = new Token(Tag.LESS_THAN);
+        specialSymbolsTokens[61] = new Token(Tag.EQUAL);
+        specialSymbolsTokens[62] = new Token(Tag.GREATER_THAN);
+        specialSymbolsTokens[91] = new Token(Tag.L_BRACKET);
+        specialSymbolsTokens[95] = new Token(Tag.UNDERSCORE);
+        specialSymbolsTokens[93] = new Token(Tag.R_BRACKET);
+        specialSymbolsTokens[123] = new Token(Tag.L_BRACE);
+        specialSymbolsTokens[124] = new Token(Tag.PIPE);
+        specialSymbolsTokens[125] = new Token(Tag.R_BRACE);
     }
 
     public static String[] getReservedWordsLexemes() {

@@ -1,9 +1,8 @@
 .-int Mamarre(dec valor){
-    .|. comentario
+    .| comentario
     ret Ceil(valor);
 }-.
 HolaMundo = out("hola mundo");
->=
+.|>=
 <=
 if IF
-ret

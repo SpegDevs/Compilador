@@ -16,8 +16,12 @@ public class Main {
         Parameters.loadFromFile("parameters.txt");
         ErrorLog.init();
         Lexicon.init();
+        SymbolTable.init();
         Scanner scanner = new Scanner();
+        Parser parser = new Parser(scanner);
+
         scanner.scan(fileName);
+
         ErrorLog.close();
     }
 }

@@ -2,7 +2,7 @@ package com.uca;
 
 public class Scanner {
 
-    private Lexicon.Token token;
+    private Token token;
     private String lexeme;
     private char c = ' ';
 
@@ -21,7 +21,6 @@ public class Scanner {
         System.out.println("Tokens:");
         while (!inputFile.isEndOfFile()){
             getToken();
-            addToken(lexeme, token);
         }
 
         outputFile.closeFile();
@@ -50,9 +49,9 @@ public class Scanner {
                     lexeme = lexeme.substring(0,Parameters.MAX_IDENTIFIER_LENGTH);
                 }
                 if (lexeme.equals("_")){
-                    token = Lexicon.Token.GUIONB;
+                    token = new Token(Tag.UNDERSCORE);
                 }else {
-                    token = Lexicon.Token.IDENTIFIER;
+                    token = new Token(Tag.IDENTIFIER);
                 }
             }
         }else if (Character.isDigit(c)){
@@ -82,22 +81,17 @@ public class Scanner {
                 }
             }
             if (decimal) {
-                token = Lexicon.Token.DECIMAL;
+                token = new Token(Tag.DECIMAL);
             } else {
-                token = Lexicon.Token.DIGIT;
+                token = new Token(Tag.INTEGER);
             }
         }else if (c == '.'){
             addToLexeme(c);
             c = getChar();
             if (c == '|'){
                 c = getChar();
-                if (c == '.'){
+                while (c != '\n'){
                     c = getChar();
-                    while (c != '\n'){
-                        c = getChar();
-                    }
-                }else{
-                    ErrorLog.logError("Error: Comentario mal escrito. Linea: "+inputFile.getLineCount());
                 }
             }else if (c == '-'){
                 c = getChar();
@@ -121,7 +115,8 @@ public class Scanner {
                 }
                 c = getChar();
             }else{
-                addToken(lexeme, Lexicon.Token.POINT);
+                token = new Token(Tag.POINT);
+                addToLexeme(c);
             }
         }
         else {
@@ -129,31 +124,32 @@ public class Scanner {
                 addToLexeme(c);
                 c = getChar();
                 if (c == '='){
-                    token = Lexicon.Token.MENORIGUAL;
+                    token = new Token(Tag.LESS_THAN_EQUAL);
                     addToLexeme(c);
                     c = getChar();
                 }else{
-                    token = Lexicon.Token.MENOR;
+                    token = new Token(Tag.LESS_THAN);
                 }
             }else if (c == '>'){
                 addToLexeme(c);
                 c = getChar();
                 if (c == '='){
                     addToLexeme(c);
-                    token = Lexicon.Token.MAYORIGUAL;
+                    token = new Token(Tag.GREATER_THAN_EQUAL);
                     c = getChar();
                 }else{
-                    token = Lexicon.Token.MAYOR;
+                    token = new Token(Tag.GREATER_THAN);
                 }
             }else {
                 token = Lexicon.getSpecialSymbolsTokens()[c];
-                if (token == Lexicon.Token.NULL) {
+                if (token == null) {
                     ErrorLog.logError("Error: No se reconoce el simbolo \"" + c + "\" Linea: " + inputFile.getLineCount());
                 }
                 addToLexeme(c);
                 c = getChar();
             }
         }
+        addToken(lexeme, token);
     }
 
     private boolean isReservedWord(){
@@ -168,7 +164,7 @@ public class Scanner {
         lexeme = lexeme.concat(Character.toString(character));
     }
 
-    private void addToken(String lexeme, Lexicon.Token token){
+    private void addToken(String lexeme, Token token){
         if (token != null) {
             System.out.println(lexeme+" -> "+token.toString());
             outputFile.writeLine(lexeme+" -> "+token.toString());
