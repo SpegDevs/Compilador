@@ -13,7 +13,7 @@ public class Scanner {
         inputFile = new FileManager(fileName);
         inputFile.openFile();
 
-        outputFile = new FileManager("output.txt");
+        /*outputFile = new FileManager("output.txt");
         outputFile.createFile();
         outputFile.clearFile();
 
@@ -25,12 +25,12 @@ public class Scanner {
 
         outputFile.closeFile();
         inputFile.closeFile();
-        System.out.println("Analisis lexicografico finalizado.");
+        System.out.println("Analisis lexicografico finalizado.");*/
     }
 
-    private void getToken(){
+    public Token getToken(){
         lexeme = "";
-        token = null;
+        token = new Token(Tag.NULL);
         while (Character.isWhitespace(c)){
             c = getChar();
         }
@@ -51,7 +51,7 @@ public class Scanner {
                 if (lexeme.equals("_")){
                     token = new Token(Tag.UNDERSCORE);
                 }else {
-                    token = new Token(Tag.IDENTIFIER);
+                    token = new Token(Tag.IDENTIFIER,lexeme);
                 }
             }
         }else if (Character.isDigit(c)){
@@ -116,10 +116,12 @@ public class Scanner {
                 c = getChar();
             }else{
                 token = new Token(Tag.POINT);
-                addToLexeme(c);
             }
-        }
-        else {
+        }else if (c == '"'){
+            //String
+        }else if (c == '\''){
+            //Caracter
+        } else {
             if (c == '<'){
                 addToLexeme(c);
                 c = getChar();
@@ -150,6 +152,7 @@ public class Scanner {
             }
         }
         addToken(lexeme, token);
+        return token;
     }
 
     private boolean isReservedWord(){
@@ -165,9 +168,11 @@ public class Scanner {
     }
 
     private void addToken(String lexeme, Token token){
-        if (token != null) {
+        if (token != null && token.getTag() != Tag.NULL) {
             System.out.println(lexeme+" -> "+token.toString());
-            outputFile.writeLine(lexeme+" -> "+token.toString());
+            if (outputFile != null) {
+                outputFile.writeLine(lexeme + " -> " + token.toString());
+            }
         }
     }
 

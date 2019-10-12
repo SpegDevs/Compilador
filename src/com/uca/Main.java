@@ -21,6 +21,7 @@ public class Main {
         Parser parser = new Parser(scanner);
 
         scanner.scan(fileName);
+        parser.parse();
 
         ErrorLog.close();
     }

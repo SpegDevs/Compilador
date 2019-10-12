@@ -25,6 +25,11 @@ public enum Tag {
     RETURN,
     TRUE,
     FALSE,
+    INT,
+    DEC,
+    STR,
+    CHAR,
+    BOO,
 
    //Funciones Predefinidas
     LENGTH,

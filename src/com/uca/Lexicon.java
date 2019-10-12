@@ -16,11 +16,12 @@ public class Lexicon {
 
     private static void initializeReservedWords(){
         Arrays.sort(reservedWordsLexemes);
-        reservedWordsTokens.put("int", new Token(Tag.INTEGER));
-        reservedWordsTokens.put("dec", new Token(Tag.DECIMAL));
-        reservedWordsTokens.put("str", new Token(Tag.STRING));
-        reservedWordsTokens.put("char", new Token(Tag.CHARACTER));
-        reservedWordsTokens.put("boo", new Token(Tag.BOOLEAN));
+
+        reservedWordsTokens.put("int", new Token(Tag.INT));
+        reservedWordsTokens.put("dec", new Token(Tag.DEC));
+        reservedWordsTokens.put("str", new Token(Tag.STR));
+        reservedWordsTokens.put("char", new Token(Tag.CHAR));
+        reservedWordsTokens.put("boo", new Token(Tag.BOO));
         reservedWordsTokens.put("arr", new Token(Tag.ARRAY));
 
         reservedWordsTokens.put("in", new Token(Tag.IN));
@@ -42,8 +43,7 @@ public class Lexicon {
         reservedWordsTokens.put("Factorial",FACTORIAL);
         reservedWordsTokens.put("Pow",POW);
         reservedWordsTokens.put("Ceil",CEIL);
-        reservedWordsTokens.put("Floor",FLOOR);
-        reservedWordsTokens.put("ret",RETURN);*/
+        reservedWordsTokens.put("Floor",FLOOR);*/
     }
 
     private static void initializeSpecialSymbols(){

@@ -1,8 +1,13 @@
-.-int Mamarre(dec valor){
-    .| comentario
-    ret Ceil(valor);
+int x,y;
+x = 2*(5+3*(10+7));
+if (x < 5){
+    x = 4;
+}
+.
+.-out(x);
+int y;
+y = 4;
+int z;
+for (int i=0; i<5; i++){
+    z = z+y;
 }-.
-HolaMundo = out("hola mundo");
-.|>=
-<=
-if IF
