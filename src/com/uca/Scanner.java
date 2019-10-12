@@ -142,7 +142,18 @@ public class Scanner {
                 }else{
                     token = new Token(Tag.GREATER_THAN);
                 }
-            }else {
+            }else if(c=='='){
+                addToLexeme(c);
+                c=getChar();
+                if(c=='='){
+                    addToLexeme(c);
+                    token = new Token(Tag.EQUAL_EQUAL);
+                    c=getChar();
+                }else{
+                    token = new Token(Tag.EQUAL);
+                }
+            }
+            else{
                 token = Lexicon.getSpecialSymbolsTokens()[c];
                 if (token == null) {
                     ErrorLog.logError("Error: No se reconoce el simbolo \"" + c + "\" Linea: " + inputFile.getLineCount());

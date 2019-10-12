@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 HolaMundo -> IDENTIFIER
 = -> EQUAL
 out -> OUT
@@ -11,3 +12,25 @@ mundo -> IDENTIFIER
 <= -> LESS_THAN_EQUAL
 if -> IF
 IF -> IDENTIFIER
+=======
+_HolaMundo -> IDENTIFIER
+= -> EQUAL
+in -> IN
+( -> PARINI
+hola -> IDENTIFIER
+) -> PARFIN
+; -> SEMICOLON
+>= -> MAYORIGUAL
+== -> IGUALIGUAL
+& -> NULL
+_ -> GUIONB
+1 -> DIGIT
+; -> SEMICOLON
+. -> POINT
+9 -> DIGIT
+; -> SEMICOLON
+<= -> MENORIGUAL
+if -> IF
+IF -> IDENTIFIER
+. -> POINT
+>>>>>>> 7a300aa6c24ecb2171d9a2baabd1d1ba5df355ab

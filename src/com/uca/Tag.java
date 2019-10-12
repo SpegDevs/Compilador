@@ -67,5 +67,6 @@ public enum Tag {
     GREATER_THAN,
     PIPE,
     LESS_THAN_EQUAL,
-    GREATER_THAN_EQUAL
+    GREATER_THAN_EQUAL,
+    EQUAL_EQUAL
 }

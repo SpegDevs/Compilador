@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 public class Lexicon {
 
-    private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec","char","boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
     private static HashMap<String,Token> reservedWordsTokens = new HashMap<>();
+    private static String[] reservedWordsLexemes = new String[]{"if","while","var","ifnot","dowhile","int","str","dec","char","boo","arr","in","out","Length","Pal","Noc","MayorA","RandomI","Factorial","Pow","Ceil","Floor","ret"};
     private static Token[] specialSymbolsTokens = new Token[255];
 
     public static void init(){
