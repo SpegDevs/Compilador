@@ -27,6 +27,7 @@ public class Lexicon {
         reservedWordsTokens.put("in", new Token(Tag.IN));
         reservedWordsTokens.put("out", new Token(Tag.OUT));
         reservedWordsTokens.put("if", new Token(Tag.IF));
+        reservedWordsTokens.put("else", new Token(Tag.ELSE));
         reservedWordsTokens.put("while", new Token(Tag.WHILE));
         reservedWordsTokens.put("ifnot", new Token(Tag.IFNOT));
         reservedWordsTokens.put("do", new Token(Tag.DO));

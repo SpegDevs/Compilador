@@ -18,6 +18,7 @@ public enum Tag {
     IN,
     OUT,
     IF,
+    ELSE,
     IFNOT,
     WHILE,
     DO,

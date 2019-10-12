@@ -8,24 +8,32 @@ public class SymbolTable {
         VARIABLE,PROCEDURE
     }
 
-    private static HashMap<String,Symbol> table = new HashMap<>();
+    private HashMap<String,Symbol> table = new HashMap<>();
+    private SymbolTable previous;
 
-    public static void init(){
-
+    public SymbolTable(SymbolTable previous){
+        this.previous = previous;
     }
 
-    public static void add(String id, Type type){
+    public void add(String id, Type type){
         table.put(id,new Symbol(id,type));
     }
 
-    public static boolean exists(String id){
-        if (table.get(id) != null){
-            return true;
+    public Symbol get(String id){
+        for (SymbolTable st=this; st!=null; st=st.getPrevious()){
+            Symbol symbol = st.getFromTable(id);
+            if (symbol != null){
+                return symbol;
+            }
         }
-        return false;
+        return null;
     }
 
-    public static Symbol get(String id){
+    private Symbol getFromTable(String id){
         return table.get(id);
+    }
+
+    public SymbolTable getPrevious(){
+        return previous;
     }
 }
