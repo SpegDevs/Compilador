@@ -53,6 +53,11 @@ public class Parser {
             condition();
             matches(Tag.R_PARENTHESIS);
             block();
+        }else if (matches(Tag.IFNOT)){
+            matches(Tag.L_PARENTHESIS);
+            condition();
+            matches(Tag.R_PARENTHESIS);
+            block();
         }
     }
 
@@ -125,7 +130,7 @@ public class Parser {
     }
 
     private void relational(){
-        if (matches(Tag.EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)){
+        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)){
 
         }else{
             System.out.println("Error: no es operador relacional");

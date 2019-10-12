@@ -5,6 +5,9 @@ if (x < 5){
     z = 4;
     x = 3;
 }
+ifnot(x==5){
+
+}
 z = 5;
 .-out(x);
 int z;

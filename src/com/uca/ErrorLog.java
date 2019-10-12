@@ -5,7 +5,7 @@ public class ErrorLog {
     private static FileManager file;
 
     public static void init(){
-        file = new FileManager("errors.txt");
+        file = new FileManager("output/errors.txt");
         file.createFile();
         file.clearFile();
     }

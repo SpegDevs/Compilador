@@ -12,6 +12,13 @@ public class FileManager {
     private int lineOffset=0;
     private int lineCount=0;
 
+    public static void createDirectory(String dir){
+        File file = new File(dir);
+        if (!file.exists()){
+            file.mkdir();
+        }
+    }
+
     public FileManager(String fileName){
         this.fileName = fileName;
     }

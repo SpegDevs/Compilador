@@ -13,11 +13,11 @@ public class Scanner {
         inputFile = new FileManager(fileName);
         inputFile.openFile();
 
-        /*outputFile = new FileManager("output.txt");
+        outputFile = new FileManager("output/output.txt");
         outputFile.createFile();
         outputFile.clearFile();
 
-        System.out.println("Iniciando Analisis lexicografico.");
+        /*System.out.println("Iniciando Analisis lexicografico.");
         System.out.println("Tokens:");
         while (!inputFile.isEndOfFile()){
             getToken();
@@ -26,6 +26,11 @@ public class Scanner {
         outputFile.closeFile();
         inputFile.closeFile();
         System.out.println("Analisis lexicografico finalizado.");*/
+    }
+
+    public void close(){
+        outputFile.closeFile();
+        inputFile.closeFile();
     }
 
     public Token getToken(){

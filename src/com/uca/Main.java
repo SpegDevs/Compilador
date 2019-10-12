@@ -13,6 +13,7 @@ public class Main {
 
     private static void compile(String fileName){
         System.out.println("=== Compilador de SpegMoe ===");
+        FileManager.createDirectory("output");
         Parameters.loadFromFile("parameters.txt");
         ErrorLog.init();
         Lexicon.init();
@@ -22,6 +23,7 @@ public class Main {
         scanner.scan(fileName);
         parser.parse();
 
+        scanner.close();
         ErrorLog.close();
     }
 }
