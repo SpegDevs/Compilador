@@ -23,4 +23,14 @@ do{
     x = x+1;
 }
 while(x<20)
+str a;
+a = "hola";
+x = a+"jkl";
+char c;
+c = 'a';
+boo b;
+b = true;
+dec n1;
+n1 = 6.7;
+x = x*n1;
 .

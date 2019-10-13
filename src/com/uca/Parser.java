@@ -139,7 +139,7 @@ public class Parser {
     }
 
     private void factor(){
-        if (matches(Tag.INTEGER)){
+        if (matches(Tag.INTEGER) || matches(Tag.DECIMAL) || matches(Tag.STRING) || matches(Tag.CHARACTER) || matches(Tag.TRUE) || matches(Tag.FALSE)){
         }else if(location()){
         }else if(matches(Tag.L_PARENTHESIS)){
             expression();
@@ -197,5 +197,8 @@ public class Parser {
 
     private void getToken(){
         token = scanner.getToken();
+        if (token == null){
+            token = new Token(Tag.POINT);
+        }
     }
 }

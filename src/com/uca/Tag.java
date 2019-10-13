@@ -1,6 +1,7 @@
 package com.uca;
 
 public enum Tag {
+    NULL,
 
     //Tipos de Dato
     INTEGER,

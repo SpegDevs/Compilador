@@ -127,9 +127,26 @@ public class Scanner {
                 token = new Token(Tag.POINT);
             }
         }else if (c == '"'){
-            //String
+            addToLexeme(c);
+            c = getChar();
+            while (c != '"'){
+                addToLexeme(c);
+                c = getChar();
+            }
+            addToLexeme(c);
+            token = new Token(Tag.STRING);
+            c = getChar();
         }else if (c == '\''){
-            //Caracter
+            addToLexeme(c);
+            c = getChar();
+            addToLexeme(c);
+            c = getChar();
+            if (c != '\''){
+                ErrorLog.logError("Error: Caracter debe terminar con ' Linea: "+inputFile.getLineCount());
+            }
+            token = new Token(Tag.CHARACTER);
+            addToLexeme(c);
+            c = getChar();
         } else {
             if (c == '<'){
                 addToLexeme(c);
