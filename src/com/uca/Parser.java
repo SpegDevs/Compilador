@@ -23,7 +23,7 @@ public class Parser {
 
     private void main(){
         symbolTables.push(new SymbolTable(null));
-        while (!is(Tag.NULL)){
+        while (!matches(Tag.POINT)){
             statement();
         }
     }
@@ -35,9 +35,9 @@ public class Parser {
         }
         while (!matches(Tag.R_BRACE)){
             statement();
-            if (is(Tag.NULL)) {
+            /*if (token == null) {
                 System.out.println("Error: Falta }");
-            }
+            }*/
         }
         symbolTables.pop();
     }
@@ -45,19 +45,53 @@ public class Parser {
     private void statement(){
         if (type()){
             declarations();
+            if (!matches(Tag.SEMICOLON)){
+                System.out.println("Error: Falta ;");
+            }
         }
         else if (location()){
             assignment();
+            if (!matches(Tag.SEMICOLON)){
+                System.out.println("Error: Falta ;");
+            }
         }else if (matches(Tag.IF)){
             matches(Tag.L_PARENTHESIS);
             condition();
             matches(Tag.R_PARENTHESIS);
             block();
+            if (matches(Tag.ELSE)){
+                block();
+            }
         }else if (matches(Tag.IFNOT)){
             matches(Tag.L_PARENTHESIS);
             condition();
             matches(Tag.R_PARENTHESIS);
             block();
+            if (matches(Tag.ELSE)){
+                block();
+            }
+        }else if (matches(Tag.FOR)){
+            matches(Tag.L_PARENTHESIS);
+            location();
+            assignment();
+            matches(Tag.SEMICOLON);
+            condition();
+            matches(Tag.SEMICOLON);
+            location();
+            assignment();
+            matches(Tag.R_PARENTHESIS);
+            block();
+        }else if (matches(Tag.WHILE)){
+            matches(Tag.L_PARENTHESIS);
+            condition();
+            matches(Tag.R_PARENTHESIS);
+            block();
+        }else if (matches(Tag.DO)){
+            block();
+            matches(Tag.WHILE);
+            matches(Tag.L_PARENTHESIS);
+            condition();
+            matches(Tag.R_PARENTHESIS);
         }
     }
 
@@ -71,9 +105,6 @@ public class Parser {
         declaration();
         while (matches(Tag.COLON)){
             declaration();
-        }
-        if (!matches(Tag.SEMICOLON)){
-            System.out.println("Error: Falta ;");
         }
     }
 
@@ -90,9 +121,7 @@ public class Parser {
             System.out.println("Error: Se esperaba operador de asignacion =");
         }
         expression();
-        if (!matches(Tag.SEMICOLON)){
-            System.out.println("Error: Falta ;");
-        }
+
     }
 
     private void expression(){
@@ -130,7 +159,7 @@ public class Parser {
     }
 
     private void relational(){
-        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)){
+        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)){
 
         }else{
             System.out.println("Error: no es operador relacional");

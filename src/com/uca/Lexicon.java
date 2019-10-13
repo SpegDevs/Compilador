@@ -36,15 +36,16 @@ public class Lexicon {
         reservedWordsTokens.put("true", new Token(Tag.TRUE));
         reservedWordsTokens.put("false", new Token(Tag.FALSE));
 
-        /*reservedWordsTokens.put("Length",LENGTH);
-        reservedWordsTokens.put("Pal",PALINDROME);
-        reservedWordsTokens.put("Noc",CONCURRENCIA);
-        reservedWordsTokens.put("MayorA",MAYORA);
-        reservedWordsTokens.put("RandomI",RANDOM);
-        reservedWordsTokens.put("Factorial",FACTORIAL);
-        reservedWordsTokens.put("Pow",POW);
-        reservedWordsTokens.put("Ceil",CEIL);
-        reservedWordsTokens.put("Floor",FLOOR);*/
+        reservedWordsTokens.put("Length", new Token(Tag.LENGTH));
+        reservedWordsTokens.put("Pal", new Token(Tag.PALINDROME));
+        reservedWordsTokens.put("Noc", new Token(Tag.CONCURRENCIA));
+        reservedWordsTokens.put("MayorA", new Token(Tag.MAYORA));
+        reservedWordsTokens.put("MenorA", new Token(Tag.MENORA));
+        reservedWordsTokens.put("RandomI", new Token(Tag.RANDOM));
+        reservedWordsTokens.put("Factorial", new Token(Tag.FACTORIAL));
+        reservedWordsTokens.put("Pow", new Token(Tag.POW));
+        reservedWordsTokens.put("Ceil", new Token(Tag.CEIL));
+        reservedWordsTokens.put("Floor", new Token(Tag.FLOOR));
     }
 
     private static void initializeSpecialSymbols(){
@@ -52,13 +53,14 @@ public class Lexicon {
             specialSymbolsTokens[i] = null;
         }
         specialSymbolsTokens[34] = new Token(Tag.DOUBLE_QUOTE);
+        specialSymbolsTokens[38] = new Token(Tag.AMPERSAND);
         specialSymbolsTokens[39] = new Token(Tag.SINGLE_QUOTE);
         specialSymbolsTokens[40] = new Token(Tag.L_PARENTHESIS);
         specialSymbolsTokens[41] = new Token(Tag.R_PARENTHESIS);
         specialSymbolsTokens[42] = new Token(Tag.MULTIPLICATION);
         specialSymbolsTokens[43] = new Token(Tag.PLUS);
         specialSymbolsTokens[44] = new Token(Tag.COLON);
-        specialSymbolsTokens[45] = new Token(Tag.DASH);
+        specialSymbolsTokens[45] = new Token(Tag.MINUS);
         specialSymbolsTokens[46] = new Token(Tag.POINT);
         specialSymbolsTokens[47] = new Token(Tag.DIVISION);
         specialSymbolsTokens[59] = new Token(Tag.SEMICOLON);

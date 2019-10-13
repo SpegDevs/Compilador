@@ -5,6 +5,7 @@ public class Scanner {
     private Token token;
     private String lexeme;
     private char c = ' ';
+    private boolean comment;
 
     private FileManager inputFile;
     private FileManager outputFile;
@@ -33,9 +34,10 @@ public class Scanner {
         inputFile.closeFile();
     }
 
-    public Token getToken(){
+    private void readNextToken(){
         lexeme = "";
-        token = new Token(Tag.NULL);
+        comment = false;
+        token = null;
         while (Character.isWhitespace(c)){
             c = getChar();
         }
@@ -98,10 +100,11 @@ public class Scanner {
                 while (c != '\n'){
                     c = getChar();
                 }
+                comment = true;
             }else if (c == '-'){
                 c = getChar();
                 int state = 0;
-                boolean comment = false;
+                boolean finished = false;
                 while (!inputFile.isEndOfFile()){
                     c = getChar();
                     if (state==0 && c=='-'){
@@ -109,15 +112,16 @@ public class Scanner {
                         continue;
                     }
                     if (state==1 && c=='.'){
-                        comment = true;
+                        finished = true;
                         break;
                     }else{
                         state = 0;
                     }
                 }
-                if (!comment){
+                if (!finished){
                     ErrorLog.logError("Error: Comentario multilinea mal escrito. Linea: "+inputFile.getLineCount());
                 }
+                comment = true;
                 c = getChar();
             }else{
                 token = new Token(Tag.POINT);
@@ -147,15 +151,25 @@ public class Scanner {
                 }else{
                     token = new Token(Tag.GREATER_THAN);
                 }
-            }else if(c=='='){
+            }else if (c == '='){
                 addToLexeme(c);
-                c=getChar();
-                if(c=='='){
+                c = getChar();
+                if(c == '='){
                     addToLexeme(c);
                     token = new Token(Tag.EQUAL_EQUAL);
-                    c=getChar();
+                    c = getChar();
                 }else{
                     token = new Token(Tag.EQUAL);
+                }
+            }else if (c == '!'){
+                addToLexeme(c);
+                c = getChar();
+                if (c == '='){
+                    addToLexeme(c);
+                    token = new Token(Tag.NOT_EQUAL);
+                    c = getChar();
+                }else{
+                    token = new Token(Tag.NOT);
                 }
             }
             else{
@@ -167,13 +181,14 @@ public class Scanner {
                 c = getChar();
             }
         }
-        addToken(lexeme, token);
-        return token;
     }
 
     private boolean isReservedWord(){
-        int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
+        /*int index = Tools.binarySearch(Lexicon.getReservedWordsLexemes(), lexeme);
         if (index == -1){
+            return false;
+        }*/
+        if (Lexicon.getReservedWordToken(lexeme) == null){
             return false;
         }
         return true;
@@ -184,12 +199,24 @@ public class Scanner {
     }
 
     private void addToken(String lexeme, Token token){
-        if (token != null && token.getTag() != Tag.NULL) {
+        if (token != null) {
             System.out.println(lexeme+" -> "+token.toString());
             if (outputFile != null) {
                 outputFile.writeLine(lexeme + " -> " + token.toString());
             }
         }
+    }
+
+    public Token getToken(){
+        if (inputFile.isEndOfFile()){
+            return new Token(Tag.POINT);
+        }
+        readNextToken();
+        while (comment){
+            readNextToken();
+        }
+        addToken(lexeme, token);
+        return token;
     }
 
     private char getChar(){

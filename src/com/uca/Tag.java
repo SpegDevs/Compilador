@@ -1,7 +1,6 @@
 package com.uca;
 
 public enum Tag {
-    NULL,
 
     //Tipos de Dato
     INTEGER,
@@ -61,12 +60,14 @@ public enum Tag {
     SEMICOLON,
     SINGLE_QUOTE,
     DOUBLE_QUOTE,
-    DASH,
     UNDERSCORE,
     LESS_THAN,
     GREATER_THAN,
     PIPE,
+    AMPERSAND,
     LESS_THAN_EQUAL,
     GREATER_THAN_EQUAL,
-    EQUAL_EQUAL
+    EQUAL_EQUAL,
+    NOT,
+    NOT_EQUAL
 }
