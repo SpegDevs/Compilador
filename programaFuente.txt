@@ -10,9 +10,10 @@ function dec fun (dec z){
     return y*c;
 }
 
-x = z;
+x = 2+call suma(4,5);
+call fun(5);
 x = 2*(5+y*(10+y));
-if (x < 5){
+if (x < 5 && y == 3){
     int z;
     z = 4;
     x = 3;

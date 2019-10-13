@@ -26,10 +26,13 @@ public class Parser {
             }
         }
         while (matches(Tag.FUNCTION)){
-            addSymbolTable();
             type();
-            matches(Tag.IDENTIFIER);
-            arguments();
+            if (is(Tag.IDENTIFIER)){
+                symbolTables.peek().add(token.getLexeme(), SymbolTable.Type.FUNCTION);
+                getToken();
+            }
+            addSymbolTable();
+            parameters();
             functionBlock();
             removeSymbolTable();
         }
@@ -117,16 +120,28 @@ public class Parser {
             matches(Tag.L_PARENTHESIS);
             conditions();
             matches(Tag.R_PARENTHESIS);
+        }else if (matches(Tag.CALL)){
+            functionCall();
+            matches(Tag.SEMICOLON);
         }
     }
 
-    private void arguments(){
+    private void parameters(){
         matches(Tag.L_PARENTHESIS);
         type();
         declaration();
         while (matches(Tag.COLON)){
             type();
             declaration();
+        }
+        matches(Tag.R_PARENTHESIS);
+    }
+
+    private void arguments(){
+        matches(Tag.L_PARENTHESIS);
+        expression();
+        while (matches(Tag.COLON)){
+            expression();
         }
         matches(Tag.R_PARENTHESIS);
     }
@@ -189,9 +204,24 @@ public class Parser {
             if (!matches(Tag.R_PARENTHESIS)){
                 System.out.println("Error: Falta parentesis de cierre");
             }
+        }else if(matches(Tag.CALL)){
+            functionCall();
         }else{
             System.out.println("Error: no es factor");
         }
+    }
+
+    private void functionCall(){
+        if (is(Tag.IDENTIFIER)){
+            Symbol symbol = symbolTables.peek().get(token.getLexeme());
+            if (symbol == null){
+                System.out.println("Error: no se ha declarado la funcion "+token.getLexeme());
+            }else if (symbol.getType() != SymbolTable.Type.FUNCTION){
+                System.out.println("Error: identificador debe ser funcion");
+            }
+            getToken();
+        }
+        arguments();
     }
 
     private boolean type(){
