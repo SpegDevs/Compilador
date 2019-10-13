@@ -19,11 +19,19 @@ public class Parser {
 
     private void program(){
         symbolTables.push(new SymbolTable(null));
-        if (type()){
+        while (type()){
             declarations();
             if (!matches(Tag.SEMICOLON)){
                 System.out.println("Error: Falta ;");
             }
+        }
+        while (matches(Tag.FUNCTION)){
+            addSymbolTable();
+            type();
+            matches(Tag.IDENTIFIER);
+            arguments();
+            functionBlock();
+            removeSymbolTable();
         }
         main();
     }
@@ -35,17 +43,28 @@ public class Parser {
     }
 
     private void block(){
-        symbolTables.push(new SymbolTable(symbolTables.peek()));
+        addSymbolTable();
         if (!matches(Tag.L_BRACE)){
             System.out.println("Error: Falta {");
         }
         while (!matches(Tag.R_BRACE)){
             statement();
-            /*if (token == null) {
-                System.out.println("Error: Falta }");
-            }*/
         }
-        symbolTables.pop();
+        removeSymbolTable();
+    }
+
+    private void functionBlock(){
+        addSymbolTable();
+        if (!matches(Tag.L_BRACE)){
+            System.out.println("Error: Falta {");
+        }
+        while (!matches(Tag.RETURN)){
+            statement();
+        }
+        expression();
+        matches(Tag.SEMICOLON);
+        matches(Tag.R_BRACE);
+        removeSymbolTable();
     }
 
     private void statement(){
@@ -99,6 +118,17 @@ public class Parser {
             conditions();
             matches(Tag.R_PARENTHESIS);
         }
+    }
+
+    private void arguments(){
+        matches(Tag.L_PARENTHESIS);
+        type();
+        declaration();
+        while (matches(Tag.COLON)){
+            type();
+            declaration();
+        }
+        matches(Tag.R_PARENTHESIS);
     }
 
     private void conditions(){
@@ -213,5 +243,13 @@ public class Parser {
         if (token == null){
             token = new Token(Tag.POINT);
         }
+    }
+
+    private void addSymbolTable(){
+        symbolTables.push(new SymbolTable(symbolTables.peek()));
+    }
+
+    private void removeSymbolTable(){
+        symbolTables.pop();
     }
 }

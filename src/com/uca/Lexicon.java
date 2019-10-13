@@ -35,6 +35,8 @@ public class Lexicon {
         reservedWordsTokens.put("return", new Token(Tag.RETURN));
         reservedWordsTokens.put("true", new Token(Tag.TRUE));
         reservedWordsTokens.put("false", new Token(Tag.FALSE));
+        reservedWordsTokens.put("function", new Token(Tag.FUNCTION));
+        reservedWordsTokens.put("call", new Token(Tag.CALL));
 
         reservedWordsTokens.put("Length", new Token(Tag.LENGTH));
         reservedWordsTokens.put("Pal", new Token(Tag.PALINDROME));

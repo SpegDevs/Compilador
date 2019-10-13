@@ -31,6 +31,8 @@ public enum Tag {
     STR,
     CHAR,
     BOO,
+    FUNCTION,
+    CALL,
 
    //Funciones Predefinidas
     LENGTH,
