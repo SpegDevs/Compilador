@@ -18,11 +18,17 @@ public class Parser {
     }
 
     private void program(){
+        symbolTables.push(new SymbolTable(null));
+        if (type()){
+            declarations();
+            if (!matches(Tag.SEMICOLON)){
+                System.out.println("Error: Falta ;");
+            }
+        }
         main();
     }
 
     private void main(){
-        symbolTables.push(new SymbolTable(null));
         while (!matches(Tag.POINT)){
             statement();
         }
@@ -56,7 +62,7 @@ public class Parser {
             }
         }else if (matches(Tag.IF)){
             matches(Tag.L_PARENTHESIS);
-            condition();
+            conditions();
             matches(Tag.R_PARENTHESIS);
             block();
             if (matches(Tag.ELSE)){
@@ -64,7 +70,7 @@ public class Parser {
             }
         }else if (matches(Tag.IFNOT)){
             matches(Tag.L_PARENTHESIS);
-            condition();
+            conditions();
             matches(Tag.R_PARENTHESIS);
             block();
             if (matches(Tag.ELSE)){
@@ -75,7 +81,7 @@ public class Parser {
             location();
             assignment();
             matches(Tag.SEMICOLON);
-            condition();
+            conditions();
             matches(Tag.SEMICOLON);
             location();
             assignment();
@@ -83,15 +89,22 @@ public class Parser {
             block();
         }else if (matches(Tag.WHILE)){
             matches(Tag.L_PARENTHESIS);
-            condition();
+            conditions();
             matches(Tag.R_PARENTHESIS);
             block();
         }else if (matches(Tag.DO)){
             block();
             matches(Tag.WHILE);
             matches(Tag.L_PARENTHESIS);
-            condition();
+            conditions();
             matches(Tag.R_PARENTHESIS);
+        }
+    }
+
+    private void conditions(){
+        condition();
+        while (matches(Tag.AND) || matches(Tag.OR)){
+            condition();
         }
     }
 

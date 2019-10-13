@@ -188,6 +188,26 @@ public class Scanner {
                 }else{
                     token = new Token(Tag.NOT);
                 }
+            }else if (c == '&'){
+                addToLexeme(c);
+                c = getChar();
+                if (c == '&'){
+                    addToLexeme(c);
+                    token = new Token(Tag.AND);
+                    c = getChar();
+                }else{
+                    token = new Token(Tag.AMPERSAND);
+                }
+            }else if (c == '|'){
+                addToLexeme(c);
+                c = getChar();
+                if (c == '|'){
+                    addToLexeme(c);
+                    token = new Token(Tag.OR);
+                    c = getChar();
+                }else{
+                    token = new Token(Tag.PIPE);
+                }
             }
             else{
                 token = Lexicon.getSpecialSymbolsTokens()[c];

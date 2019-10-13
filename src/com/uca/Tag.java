@@ -70,5 +70,7 @@ public enum Tag {
     GREATER_THAN_EQUAL,
     EQUAL_EQUAL,
     NOT,
-    NOT_EQUAL
+    NOT_EQUAL,
+    AND,
+    OR
 }
