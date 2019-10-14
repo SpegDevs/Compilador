@@ -22,9 +22,7 @@ public class Parser {
         symbolTables.push(new SymbolTable(null));
         while (type()){
             declarations();
-            if (!matches(Tag.SEMICOLON)){
-                System.out.println("Error: Falta ;");
-            }
+            matchesError(Tag.SEMICOLON,";");
         }
         while (matches(Tag.FUNCTION)){
             type();
@@ -41,16 +39,14 @@ public class Parser {
     }
 
     private void main(){
-        while (!matches(Tag.POINT)){
+        while (!scanner.isEndOfFile()){
             statement();
         }
     }
 
     private void block(){
         addSymbolTable();
-        if (!matches(Tag.L_BRACE)){
-            System.out.println("Error: Falta {");
-        }
+        matchesError(Tag.L_BRACE,"{");
         while (!matches(Tag.R_BRACE)){
             statement();
         }
@@ -59,91 +55,87 @@ public class Parser {
 
     private void functionBlock(){
         addSymbolTable();
-        if (!matches(Tag.L_BRACE)){
-            System.out.println("Error: Falta {");
-        }
+        matchesError(Tag.L_BRACE,"{");
         while (!matches(Tag.RETURN)){
             statement();
         }
         expression();
-        matches(Tag.SEMICOLON);
-        matches(Tag.R_BRACE);
+        matchesError(Tag.SEMICOLON,";");
+        matchesError(Tag.R_BRACE,"}");
         removeSymbolTable();
     }
 
     private void statement(){
         if (type()){
             declarations();
-            if (!matches(Tag.SEMICOLON)){
-                System.out.println("Error: Falta ;");
-            }
+            matchesError(Tag.SEMICOLON,";");
         }else if (location()){
             assignment();
-            if (!matches(Tag.SEMICOLON)){
-                System.out.println("Error: Falta ;");
-            }
+            matchesError(Tag.SEMICOLON,";");
         }else if (matches(Tag.IF)){
-            matches(Tag.L_PARENTHESIS);
+            matchesError(Tag.L_PARENTHESIS,"(");
             conditions();
-            matches(Tag.R_PARENTHESIS);
+            matchesError(Tag.R_PARENTHESIS,")");
             block();
             if (matches(Tag.ELSE)){
                 block();
             }
         }else if (matches(Tag.IFNOT)){
-            matches(Tag.L_PARENTHESIS);
+            matchesError(Tag.L_PARENTHESIS,"(");
             conditions();
-            matches(Tag.R_PARENTHESIS);
+            matchesError(Tag.R_PARENTHESIS,")");
             block();
             if (matches(Tag.ELSE)){
                 block();
             }
         }else if (matches(Tag.FOR)){
-            matches(Tag.L_PARENTHESIS);
+            matchesError(Tag.L_PARENTHESIS,"(");
             location();
             assignment();
-            matches(Tag.SEMICOLON);
+            matchesError(Tag.SEMICOLON,";");
             conditions();
-            matches(Tag.SEMICOLON);
+            matchesError(Tag.SEMICOLON,";");
             location();
             assignment();
-            matches(Tag.R_PARENTHESIS);
+            matchesError(Tag.R_PARENTHESIS,")");
             block();
         }else if (matches(Tag.WHILE)){
-            matches(Tag.L_PARENTHESIS);
+            matchesError(Tag.L_PARENTHESIS,"(");
             conditions();
-            matches(Tag.R_PARENTHESIS);
+            matchesError(Tag.R_PARENTHESIS,")");
             block();
         }else if (matches(Tag.DO)){
             block();
-            matches(Tag.WHILE);
-            matches(Tag.L_PARENTHESIS);
+            matchesError(Tag.WHILE,"while");
+            matchesError(Tag.L_PARENTHESIS,"(");
             conditions();
-            matches(Tag.R_PARENTHESIS);
+            matchesError(Tag.R_PARENTHESIS,")");
         }else if (matches(Tag.CALL)){
             functionCall();
-            matches(Tag.SEMICOLON);
+            matchesError(Tag.SEMICOLON,";");
+        }else{
+            printError("Error: No es instruccion "+token.getLexeme()+".");
         }
     }
 
     private void parameters(){
-        matches(Tag.L_PARENTHESIS);
+        matchesError(Tag.L_PARENTHESIS,"(");
         type();
         declaration();
         while (matches(Tag.COLON)){
             type();
             declaration();
         }
-        matches(Tag.R_PARENTHESIS);
+        matchesError(Tag.R_PARENTHESIS,")");
     }
 
     private void arguments(){
-        matches(Tag.L_PARENTHESIS);
+        matchesError(Tag.L_PARENTHESIS,"(");
         expression();
         while (matches(Tag.COLON)){
             expression();
         }
-        matches(Tag.R_PARENTHESIS);
+        matchesError(Tag.R_PARENTHESIS,")");
     }
 
     private void conditions(){
@@ -168,7 +160,7 @@ public class Parser {
 
     private void declaration(){
         if (!is(Tag.IDENTIFIER)){
-            System.out.println("Error: debe ser identificador "+token.getLexeme());
+            printError("Error: Debe ser identificador "+token.getLexeme());
         }
         symbolTables.peek().add(token.getLexeme(), type);
         getToken();
@@ -176,7 +168,7 @@ public class Parser {
 
     private void assignment(){
         if (!matches(Tag.EQUAL)){
-            System.out.println("Error: Se esperaba operador de asignacion =");
+            printError("Error: Se esperaba operador de asignacion =");
         }
         expression();
 
@@ -201,33 +193,39 @@ public class Parser {
         }else if(location()){
         }else if(matches(Tag.L_PARENTHESIS)){
             expression();
-            if (!matches(Tag.R_PARENTHESIS)){
-                System.out.println("Error: Falta parentesis de cierre");
-            }
+            matchesError(Tag.R_PARENTHESIS,")");
         }else if(matches(Tag.CALL)){
             functionCall();
         }else{
-            System.out.println("Error: no es factor");
+            printError("Error: "+token.getLexeme()+" no es factor");
         }
     }
 
     private void arrayOperator(){
-        matches(Tag.L_BRACKET);
+        matchesError(Tag.L_BRACKET,"[");
         expression();
-        matches(Tag.R_BRACKET);
+        matchesError(Tag.R_BRACKET,"]");
     }
 
     private void functionCall(){
         if (is(Tag.IDENTIFIER)){
             Symbol symbol = symbolTables.peek().get(token.getLexeme());
             if (symbol == null){
-                System.out.println("Error: no se ha declarado la funcion "+token.getLexeme());
+                printError("Error: No se ha declarado la funcion "+token.getLexeme());
             }else if (symbol.getType() != SymbolTable.Type.FUNCTION){
-                System.out.println("Error: identificador debe ser funcion");
+                printError("Error: Identificador "+token.getLexeme()+" debe ser funcion");
             }
             getToken();
         }
         arguments();
+    }
+
+    private void relational(){
+        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)){
+
+        }else{
+            printError("Error: "+token.getLexeme()+" no es operador relacional");
+        }
     }
 
     private boolean type(){
@@ -236,7 +234,9 @@ public class Parser {
             return true;
         }else if (matches(Tag.ARRAY)){
             arrayOperator();
-            basicType();
+            if (!basicType()){
+                printError("Error: Se esperaba un tipo de dato");
+            }
             this.type = SymbolTable.Type.ARRAY;
             return true;
         }
@@ -250,25 +250,17 @@ public class Parser {
         return false;
     }
 
-    private void relational(){
-        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)){
-
-        }else{
-            System.out.println("Error: no es operador relacional");
-        }
-    }
-
     private boolean location(){
         if (is(Tag.IDENTIFIER)){
             Symbol symbol = symbolTables.peek().get(token.getLexeme());
             if (symbol == null){
-                System.out.println("Error: no se ha declarado la variable "+token.getLexeme());
+                printError("Error: No se ha declarado la variable "+token.getLexeme());
             }else if (symbol.getType() == SymbolTable.Type.ARRAY) {
                 getToken();
                 arrayOperator();
                 return true;
             }else if (symbol.getType() != SymbolTable.Type.VARIABLE){
-                System.out.println("Error: identificador debe ser variable");
+                printError("Error: Identificador "+token.getLexeme()+" debe ser una variable");
             }
             getToken();
             return true;
@@ -291,10 +283,19 @@ public class Parser {
         return false;
     }
 
+    private boolean matchesError(Tag tag, String symbol){
+        if (is(tag)){
+            getToken();
+            return true;
+        }
+        printError("Error: Se esperaba "+symbol);
+        return false;
+    }
+
     private void getToken(){
         token = scanner.getToken();
         if (token == null){
-            token = new Token(Tag.POINT);
+            token = new Token(Tag.NULL);
         }
     }
 
@@ -304,5 +305,10 @@ public class Parser {
 
     private void removeSymbolTable(){
         symbolTables.pop();
+    }
+
+    private void printError(String error){
+        ErrorLog.logError(error.concat(" Line: "+(scanner.getLine()-1)));
+        Main.close();
     }
 }

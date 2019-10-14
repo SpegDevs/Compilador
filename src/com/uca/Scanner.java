@@ -119,7 +119,7 @@ public class Scanner {
                     }
                 }
                 if (!finished){
-                    ErrorLog.logError("Error: Comentario multilinea mal escrito. Linea: "+inputFile.getLineCount());
+                    ErrorLog.logError("Error: Falta cerrar el comentario con -. Linea: "+inputFile.getLineCount());
                 }
                 comment = true;
                 c = getChar();
@@ -132,6 +132,9 @@ public class Scanner {
             while (c != '"'){
                 addToLexeme(c);
                 c = getChar();
+                if (inputFile.isEndOfFile()){
+                    ErrorLog.logError("Error: Falta \" de cierre"+inputFile.getLineCount());
+                }
             }
             addToLexeme(c);
             token = createToken(Tag.STRING);
@@ -143,9 +146,10 @@ public class Scanner {
             c = getChar();
             if (c != '\''){
                 ErrorLog.logError("Error: Caracter debe terminar con ' Linea: "+inputFile.getLineCount());
+            }else {
+                addToLexeme(c);
+                token = createToken(Tag.CHARACTER);
             }
-            addToLexeme(c);
-            token = createToken(Tag.CHARACTER);
             c = getChar();
         } else {
             if (c == '<'){
@@ -211,7 +215,9 @@ public class Scanner {
             }
             else{
                 addToLexeme(c);
-                token = createToken(Lexicon.getSpecialSymbolsTokens()[c].getTag());
+                if (Lexicon.getSpecialSymbolsTokens()[c] != null) {
+                    token = createToken(Lexicon.getSpecialSymbolsTokens()[c].getTag());
+                }
                 if (token == null) {
                     ErrorLog.logError("Error: No se reconoce el simbolo \"" + c + "\" Linea: " + inputFile.getLineCount());
                 }
@@ -245,7 +251,7 @@ public class Scanner {
     }
 
     private Token createToken(Tag tag){
-        return new Token(tag,lexeme,inputFile.getLineCount());
+        return new Token(tag,lexeme);
     }
 
     public Token getToken(){
@@ -262,5 +268,13 @@ public class Scanner {
 
     private char getChar(){
         return inputFile.getNextChar();
+    }
+
+    public int getLine(){
+        return inputFile.getLineCount();
+    }
+
+    public boolean isEndOfFile(){
+        return inputFile.isEndOfFile();
     }
 }
