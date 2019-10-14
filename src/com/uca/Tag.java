@@ -8,7 +8,8 @@ public enum Tag {
     DECIMAL,
     STRING,
     CHARACTER,
-    BOOLEAN,
+    TRUE,
+    FALSE,
     ARRAY,
 
     //Identificador
@@ -24,8 +25,6 @@ public enum Tag {
     DO,
     FOR,
     RETURN,
-    TRUE,
-    FALSE,
     INT,
     DEC,
     STR,

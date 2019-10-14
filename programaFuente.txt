@@ -1,4 +1,5 @@
 int x,y;
+str s;
 
 function int suma(int n1, int n2){
     return n1+n2;
@@ -9,6 +10,11 @@ function dec fun (dec z){
     c = c+z;
     return y*c;
 }
+
+arr[4] int a1;
+arr[3] str s1, s2;
+a1[0] = 4+5;
+x = 3+a1[1];
 
 x = 2+call suma(4,5);
 call fun(5);

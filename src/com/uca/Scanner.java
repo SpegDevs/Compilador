@@ -56,9 +56,9 @@ public class Scanner {
                     lexeme = lexeme.substring(0,Parameters.MAX_IDENTIFIER_LENGTH);
                 }
                 if (lexeme.equals("_")){
-                    token = new Token(Tag.UNDERSCORE);
+                    token = createToken(Tag.UNDERSCORE);
                 }else {
-                    token = new Token(Tag.IDENTIFIER,lexeme);
+                    token = createToken(Tag.IDENTIFIER);
                 }
             }
         }else if (Character.isDigit(c)){
@@ -88,9 +88,9 @@ public class Scanner {
                 }
             }
             if (decimal) {
-                token = new Token(Tag.DECIMAL);
+                token = createToken(Tag.DECIMAL);
             } else {
-                token = new Token(Tag.INTEGER);
+                token = createToken(Tag.INTEGER);
             }
         }else if (c == '.'){
             addToLexeme(c);
@@ -124,7 +124,7 @@ public class Scanner {
                 comment = true;
                 c = getChar();
             }else{
-                token = new Token(Tag.POINT);
+                token = createToken(Tag.POINT);
             }
         }else if (c == '"'){
             addToLexeme(c);
@@ -134,7 +134,7 @@ public class Scanner {
                 c = getChar();
             }
             addToLexeme(c);
-            token = new Token(Tag.STRING);
+            token = createToken(Tag.STRING);
             c = getChar();
         }else if (c == '\''){
             addToLexeme(c);
@@ -144,77 +144,77 @@ public class Scanner {
             if (c != '\''){
                 ErrorLog.logError("Error: Caracter debe terminar con ' Linea: "+inputFile.getLineCount());
             }
-            token = new Token(Tag.CHARACTER);
             addToLexeme(c);
+            token = createToken(Tag.CHARACTER);
             c = getChar();
         } else {
             if (c == '<'){
                 addToLexeme(c);
                 c = getChar();
                 if (c == '='){
-                    token = new Token(Tag.LESS_THAN_EQUAL);
                     addToLexeme(c);
+                    token = createToken(Tag.LESS_THAN_EQUAL);
                     c = getChar();
                 }else{
-                    token = new Token(Tag.LESS_THAN);
+                    token = createToken(Tag.LESS_THAN);
                 }
             }else if (c == '>'){
                 addToLexeme(c);
                 c = getChar();
                 if (c == '='){
                     addToLexeme(c);
-                    token = new Token(Tag.GREATER_THAN_EQUAL);
+                    token = createToken(Tag.GREATER_THAN_EQUAL);
                     c = getChar();
                 }else{
-                    token = new Token(Tag.GREATER_THAN);
+                    token = createToken(Tag.GREATER_THAN);
                 }
             }else if (c == '='){
                 addToLexeme(c);
                 c = getChar();
                 if(c == '='){
                     addToLexeme(c);
-                    token = new Token(Tag.EQUAL_EQUAL);
+                    token = createToken(Tag.EQUAL_EQUAL);
                     c = getChar();
                 }else{
-                    token = new Token(Tag.EQUAL);
+                    token = createToken(Tag.EQUAL);
                 }
             }else if (c == '!'){
                 addToLexeme(c);
                 c = getChar();
                 if (c == '='){
                     addToLexeme(c);
-                    token = new Token(Tag.NOT_EQUAL);
+                    token = createToken(Tag.NOT_EQUAL);
                     c = getChar();
                 }else{
-                    token = new Token(Tag.NOT);
+                    token = createToken(Tag.NOT);
                 }
             }else if (c == '&'){
                 addToLexeme(c);
                 c = getChar();
                 if (c == '&'){
                     addToLexeme(c);
-                    token = new Token(Tag.AND);
+                    token = createToken(Tag.AND);
                     c = getChar();
                 }else{
-                    token = new Token(Tag.AMPERSAND);
+                    token = createToken(Tag.AMPERSAND);
                 }
             }else if (c == '|'){
                 addToLexeme(c);
                 c = getChar();
                 if (c == '|'){
                     addToLexeme(c);
-                    token = new Token(Tag.OR);
+                    token = createToken(Tag.OR);
                     c = getChar();
                 }else{
-                    token = new Token(Tag.PIPE);
+                    token = createToken(Tag.PIPE);
                 }
             }
             else{
-                token = Lexicon.getSpecialSymbolsTokens()[c];
+                addToLexeme(c);
+                token = createToken(Lexicon.getSpecialSymbolsTokens()[c].getTag());
                 if (token == null) {
                     ErrorLog.logError("Error: No se reconoce el simbolo \"" + c + "\" Linea: " + inputFile.getLineCount());
                 }
-                addToLexeme(c);
                 c = getChar();
             }
         }
@@ -244,9 +244,13 @@ public class Scanner {
         }
     }
 
+    private Token createToken(Tag tag){
+        return new Token(tag,lexeme,inputFile.getLineCount());
+    }
+
     public Token getToken(){
         if (inputFile.isEndOfFile()){
-            return new Token(Tag.POINT);
+            return createToken(Tag.POINT);
         }
         readNextToken();
         while (comment){

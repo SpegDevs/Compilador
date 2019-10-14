@@ -7,6 +7,7 @@ public class Parser {
     private Scanner scanner;
     private Token token;
     private Stack<SymbolTable> symbolTables = new Stack<>();
+    private SymbolTable.Type type;
 
     public Parser(Scanner scanner){
         this.scanner = scanner;
@@ -76,8 +77,7 @@ public class Parser {
             if (!matches(Tag.SEMICOLON)){
                 System.out.println("Error: Falta ;");
             }
-        }
-        else if (location()){
+        }else if (location()){
             assignment();
             if (!matches(Tag.SEMICOLON)){
                 System.out.println("Error: Falta ;");
@@ -168,9 +168,9 @@ public class Parser {
 
     private void declaration(){
         if (!is(Tag.IDENTIFIER)){
-            System.out.println("Error: debe ser identificador ;");
+            System.out.println("Error: debe ser identificador "+token.getLexeme());
         }
-        symbolTables.peek().add(token.getLexeme(), SymbolTable.Type.VARIABLE);
+        symbolTables.peek().add(token.getLexeme(), type);
         getToken();
     }
 
@@ -211,6 +211,12 @@ public class Parser {
         }
     }
 
+    private void arrayOperator(){
+        matches(Tag.L_BRACKET);
+        expression();
+        matches(Tag.R_BRACKET);
+    }
+
     private void functionCall(){
         if (is(Tag.IDENTIFIER)){
             Symbol symbol = symbolTables.peek().get(token.getLexeme());
@@ -225,6 +231,19 @@ public class Parser {
     }
 
     private boolean type(){
+        if (basicType()){
+            this.type = SymbolTable.Type.VARIABLE;
+            return true;
+        }else if (matches(Tag.ARRAY)){
+            arrayOperator();
+            basicType();
+            this.type = SymbolTable.Type.ARRAY;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean basicType(){
         if (matches(Tag.INT) || matches(Tag.DEC) || matches(Tag.STR) || matches(Tag.CHAR) || matches(Tag.BOO)){
             return true;
         }
@@ -244,6 +263,10 @@ public class Parser {
             Symbol symbol = symbolTables.peek().get(token.getLexeme());
             if (symbol == null){
                 System.out.println("Error: no se ha declarado la variable "+token.getLexeme());
+            }else if (symbol.getType() == SymbolTable.Type.ARRAY) {
+                getToken();
+                arrayOperator();
+                return true;
             }else if (symbol.getType() != SymbolTable.Type.VARIABLE){
                 System.out.println("Error: identificador debe ser variable");
             }

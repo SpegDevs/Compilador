@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class SymbolTable {
 
     public enum Type{
-        VARIABLE,FUNCTION
+        VARIABLE,FUNCTION,ARRAY
     }
 
     private HashMap<String,Symbol> table = new HashMap<>();
