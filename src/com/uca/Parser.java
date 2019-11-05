@@ -8,6 +8,7 @@ public class Parser {
     private Token token;
     private Stack<SymbolTable> symbolTables = new Stack<>();
     private SymbolTable.Type type;
+    private PCodeGenerator pCodeGenerator = new PCodeGenerator();
 
     public Parser(Scanner scanner){
         this.scanner = scanner;
