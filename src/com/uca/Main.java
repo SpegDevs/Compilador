@@ -1,5 +1,12 @@
 package com.uca;
 
+import com.uca.parser.Parser;
+import com.uca.scanner.Lexicon;
+import com.uca.scanner.Scanner;
+import com.uca.tools.ErrorLog;
+import com.uca.tools.FileManager;
+import com.uca.tools.Parameters;
+
 public class Main {
 
     private static Scanner scanner;
