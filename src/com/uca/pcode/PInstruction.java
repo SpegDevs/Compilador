@@ -6,8 +6,10 @@ public class PInstruction {
     private int level;
     private int address;
 
-    public PInstruction(PCode instruction){
+    public PInstruction(PCode instruction, int level, int address){
         this.instruction = instruction;
+        this.level = level;
+        this.address = address;
     }
 
     public PCode getInstruction() {

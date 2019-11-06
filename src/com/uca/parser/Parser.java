@@ -1,5 +1,7 @@
 package com.uca.parser;
 
+import com.uca.pcode.PCode;
+import com.uca.pcode.PInstruction;
 import com.uca.tools.ErrorLog;
 import com.uca.Main;
 import com.uca.pcode.PCodeGenerator;
@@ -13,8 +15,10 @@ public class Parser {
 
     private Scanner scanner;
     private Token token;
+    private Token lastToken;
     private Stack<SymbolTable> symbolTables = new Stack<>();
     private SymbolTable.Type type;
+    private int level;
     private PCodeGenerator pCodeGenerator = new PCodeGenerator();
 
     public Parser(Scanner scanner){
@@ -30,22 +34,29 @@ public class Parser {
 
     private void program(){
         symbolTables.push(new SymbolTable(null));
+        globalDeclarations();
+        functions();
+        main();
+    }
+
+    private void globalDeclarations(){
         while (type()){
             declarations();
             matches(Tag.SEMICOLON,";");
         }
+    }
+
+    private void functions(){
         while (matches(Tag.FUNCTION)){
             type();
-            if (is(Tag.IDENTIFIER)){
-                symbolTables.peek().add(token.getLexeme(), SymbolTable.Type.FUNCTION);
-                getToken();
+            if (matches(Tag.IDENTIFIER)){
+                symbolTables.peek().add(lastToken.getLexeme(), SymbolTable.Type.FUNCTION);
             }
             addSymbolTable();
             parameters();
             functionBlock();
             removeSymbolTable();
         }
-        main();
     }
 
     private void main(){
@@ -173,6 +184,7 @@ public class Parser {
             printError("Error: Debe ser identificador "+token.getLexeme());
         }
         symbolTables.peek().add(token.getLexeme(), type);
+        pCodeGenerator.generate(new PInstruction(PCode.INS, level, 0));
         getToken();
     }
 
@@ -225,7 +237,10 @@ public class Parser {
             }else if (symbol.getType() != SymbolTable.Type.FUNCTION){
                 printError("Error: Identificador "+token.getLexeme()+" debe ser funcion");
             }
+            pCodeGenerator.generate(new PInstruction(PCode.LLA, level-symbol.getLevel(), symbol.getAddress()));
             getToken();
+        }else{
+            printError("Error: Call debe ir seguido de un identificador");
         }
         arguments();
     }
@@ -279,6 +294,7 @@ public class Parser {
     }
 
     private boolean is(Tag tag){
+        lastToken = token;
         if (token.getTag() == tag){
             return true;
         }
@@ -311,10 +327,12 @@ public class Parser {
 
     private void addSymbolTable(){
         symbolTables.push(new SymbolTable(symbolTables.peek()));
+        level++;
     }
 
     private void removeSymbolTable(){
         symbolTables.pop();
+        level--;
     }
 
     private void printError(String error){

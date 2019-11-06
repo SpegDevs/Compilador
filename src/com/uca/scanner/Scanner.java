@@ -1,5 +1,6 @@
 package com.uca.scanner;
 
+import com.uca.Main;
 import com.uca.tools.ErrorLog;
 import com.uca.tools.FileManager;
 import com.uca.tools.Parameters;
@@ -142,6 +143,7 @@ public class Scanner {
                 c = getChar();
                 if (inputFile.isEndOfFile()){
                     ErrorLog.logError("Error: Falta \" de cierre"+inputFile.getLineCount());
+                    Main.close();
                 }
             }
             addToLexeme(c);
@@ -161,6 +163,7 @@ public class Scanner {
                     c = getChar();
                     if (inputFile.isEndOfFile()){
                         ErrorLog.logError("Error: Falta \' de cierre"+inputFile.getLineCount());
+                        Main.close();
                     }
                 }
                 addToLexeme(c);
@@ -295,7 +298,7 @@ public class Scanner {
             return createToken(Tag.POINT);
         }
         readNextToken();
-        while (comment){
+        while (comment && !inputFile.isEndOfFile()){
             readNextToken();
         }
         addToken(lexeme, token);
