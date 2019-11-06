@@ -96,9 +96,9 @@ public class Scanner {
                 }
             }
             if (decimal) {
-                token = createToken(Tag.DECIMAL);
+                token = createDecimalToken(Tag.DECIMAL);
             } else {
-                token = createToken(Tag.INTEGER);
+                token = createIntegerToken(Tag.INTEGER);
             }
         }else if (c == '.'){
             addToLexeme(c);
@@ -145,18 +145,26 @@ public class Scanner {
                 }
             }
             addToLexeme(c);
-            token = createToken(Tag.STRING);
+            token = createStringToken(Tag.STRING);
             c = getChar();
         }else if (c == '\''){
             addToLexeme(c);
             c = getChar();
             addToLexeme(c);
             c = getChar();
-            if (c != '\''){
-                ErrorLog.logError("Error: Caracter debe terminar con ' Linea: "+inputFile.getLineCount());
-            }else {
+            if (c == '\''){
                 addToLexeme(c);
-                token = createToken(Tag.CHARACTER);
+                token = createCharacterToken(Tag.CHARACTER);
+            }else{
+                while (c != '\''){
+                    addToLexeme(c);
+                    c = getChar();
+                    if (inputFile.isEndOfFile()){
+                        ErrorLog.logError("Error: Falta \' de cierre"+inputFile.getLineCount());
+                    }
+                }
+                addToLexeme(c);
+                token = createStringToken(Tag.STRING);
             }
             c = getChar();
         } else {
@@ -260,6 +268,26 @@ public class Scanner {
 
     private Token createToken(Tag tag){
         return new Token(tag,lexeme);
+    }
+
+    private Token createIntegerToken(Tag tag){
+        return new TokenValue<Integer>(tag,lexeme,Integer.parseInt(lexeme));
+    }
+
+    private Token createDecimalToken(Tag tag){
+        return new TokenValue<Double>(tag,lexeme,Double.parseDouble(lexeme));
+    }
+
+    private Token createStringToken(Tag tag){
+        String value = "";
+        if (lexeme.length() >= 3){
+            value = lexeme.substring(1,lexeme.length()-2);
+        }
+        return new TokenValue<String>(tag,lexeme,value);
+    }
+
+    private Token createCharacterToken(Tag tag){
+        return new TokenValue<Character>(tag,lexeme,lexeme.charAt(1));
     }
 
     public Token getToken(){

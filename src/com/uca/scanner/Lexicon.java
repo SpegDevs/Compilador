@@ -33,10 +33,11 @@ public class Lexicon {
         reservedWordsTokens.put("do", new Token(Tag.DO));
         reservedWordsTokens.put("for", new Token(Tag.FOR));
         reservedWordsTokens.put("return", new Token(Tag.RETURN));
-        reservedWordsTokens.put("true", new Token(Tag.TRUE));
-        reservedWordsTokens.put("false", new Token(Tag.FALSE));
         reservedWordsTokens.put("function", new Token(Tag.FUNCTION));
         reservedWordsTokens.put("call", new Token(Tag.CALL));
+
+        reservedWordsTokens.put("true", new TokenValue<Boolean>(Tag.TRUE, true));
+        reservedWordsTokens.put("false", new TokenValue<Boolean>(Tag.FALSE, false));
 
         reservedWordsTokens.put("Length", new Token(Tag.LENGTH));
         reservedWordsTokens.put("Pal", new Token(Tag.PALINDROME));
