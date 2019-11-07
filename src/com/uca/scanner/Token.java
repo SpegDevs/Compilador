@@ -4,6 +4,7 @@ public class Token {
 
     private Tag tag;
     private String lexeme;
+    private int line;
 
     public Token(Tag tag){
         this.tag = tag;
@@ -24,5 +25,13 @@ public class Token {
 
     public String getLexeme(){
         return lexeme;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 }

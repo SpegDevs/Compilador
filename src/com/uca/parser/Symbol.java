@@ -4,12 +4,16 @@ public class Symbol {
 
     private String name;
     private SymbolTable.Type type;
+    private SymbolTable.DataType dataType;
     private int level;
     private int address;
 
-    public Symbol(String name, SymbolTable.Type type){
+    public Symbol(String name, SymbolTable.Type type, SymbolTable.DataType dataType, int level, int address) {
         this.name = name;
         this.type = type;
+        this.dataType = dataType;
+        this.level = level;
+        this.address = address;
     }
 
     public String getName() {
@@ -42,5 +46,13 @@ public class Symbol {
 
     public void setAddress(int address) {
         this.address = address;
+    }
+
+    public SymbolTable.DataType getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(SymbolTable.DataType dataType) {
+        this.dataType = dataType;
     }
 }

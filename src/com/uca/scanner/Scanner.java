@@ -23,6 +23,7 @@ public class Scanner {
         outputFile.createFile();
         outputFile.clearFile();
 
+        System.out.println("Tokens:");
         /*System.out.println("Iniciando Analisis lexicografico.");
         System.out.println("Tokens:");
         while (!inputFile.isEndOfFile()){
@@ -262,6 +263,7 @@ public class Scanner {
 
     private void addToken(String lexeme, Token token){
         if (token != null) {
+            token.setLine(inputFile.getLineCount());
             System.out.println(lexeme+" -> "+token.toString());
             if (outputFile != null) {
                 outputFile.writeLine(lexeme + " -> " + token.toString());
@@ -295,7 +297,7 @@ public class Scanner {
 
     public Token getToken(){
         if (inputFile.isEndOfFile()){
-            return createToken(Tag.POINT);
+            return null;
         }
         readNextToken();
         while (comment && !inputFile.isEndOfFile()){

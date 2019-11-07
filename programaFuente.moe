@@ -1,10 +1,9 @@
 int x;
 int y;
 int z;
-function int sum(int n1, int n2){
-    return n1+n2;
-}
-z = call sum(x,y);
+x = 3;
+y = 2;
+z = x+y;
 
 .-int x,y;
 str s;
