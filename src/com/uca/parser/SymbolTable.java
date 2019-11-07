@@ -14,13 +14,19 @@ public class SymbolTable {
 
     private HashMap<String, Symbol> table = new HashMap<>();
     private SymbolTable previous;
+    private int level;
+    private int nVariables;
 
     public SymbolTable(SymbolTable previous) {
         this.previous = previous;
+        if (previous != null) {
+            this.level = previous.level + 1;
+        }
     }
 
-    public void add(String id, Type type, DataType dataType, int level, int address) {
-        table.put(id, new Symbol(id, type, dataType, level, address));
+    public void add(String id, Type type, DataType dataType) {
+        table.put(id, new Symbol(id, type, dataType, level, nVariables));
+        nVariables++;
     }
 
     public Symbol get(String id) {
@@ -46,5 +52,21 @@ public class SymbolTable {
             Symbol s = table.get(key);
             System.out.println(s.getName()+" "+s.getType().toString()+" "+s.getDataType().toString()+" "+s.getLevel()+" "+s.getAddress());
         }
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getnVariables() {
+        return nVariables;
+    }
+
+    public void setnVariables(int nVariables) {
+        this.nVariables = nVariables;
     }
 }

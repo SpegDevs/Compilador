@@ -1,69 +1,12 @@
 int x;
 int y;
 int z;
-x = 3;
-y = 2;
-z = x+y;
-
-.-int x,y;
-str s;
-arr[5] boo b;
 
 function int suma(int n1, int n2){
     return n1+n2;
 }
 
-function dec fun (dec z){
-    int c;
-    c = c+z;
-    return y*c;
-}
-
-arr[4] int a1;
-arr[3] str s1, s2;
-a1[0] = 4+5;
-x = 3+a1[1];
-
-x = 2+call suma(4,5);
-call fun(5);
-x = 2*(5+y*(10+y));
-if (x < 5 && y == 3){
-    int z;
-    z = 4;
-    x = 3;
-}
-ifnot(x==5){
-
-}else{
-    int y;
-}
-int i;
-for (i=0; i<5; i=i+1){
-    int z;
-    z = z+y;
-}
-do{
-    x = x+1;
-}
-while(x<20)
-while(x!=4){
-    int abc;
-    abc = 5*x;
-}
-str a;
-a = "hola";
-x = a+"jkl";
-char c;
-c = 'a';
-boo b;
-b = true;
-dec n1;
-n1 = 6.7;
-x = x*n1;
-while (n1>=5){
-    if (x == 3){
-        for (x=0; x<3; x=x+1){
-            call fun(4);
-        }
-    }
-}-.
+x = 3;
+y = 2;
+z = x+y;
+z = call(suma(x,y));

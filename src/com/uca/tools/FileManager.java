@@ -13,6 +13,7 @@ public class FileManager {
     private String line="";
     private int lineOffset=0;
     private int lineCount=0;
+    private int realLineCount=0;
 
     public static void createDirectory(String dir){
         File file = new File(dir);
@@ -115,6 +116,9 @@ public class FileManager {
     }
 
     public char getNextChar(){
+        if (lineOffset == 0){
+            realLineCount++;
+        }
         return readNextChar();
     }
 
@@ -138,7 +142,7 @@ public class FileManager {
     }
 
     public int getLineCount(){
-        return lineCount;
+        return realLineCount;
     }
 
     public int getCharCount(){

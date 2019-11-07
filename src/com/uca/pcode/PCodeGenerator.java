@@ -16,6 +16,8 @@ public class PCodeGenerator {
     }
 
     public void printPCode(){
+        System.out.println();
+        System.out.println("P Code:");
         for (PInstruction p:pCode){
             System.out.println(p.getInstruction().toString()+" "+p.getLevel()+" "+p.getAddress());
         }

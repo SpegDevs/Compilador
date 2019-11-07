@@ -16,13 +16,12 @@ public class Parser {
     private Scanner scanner;
     private Token token;
     private Token lastToken;
+
     private Stack<SymbolTable> symbolTables = new Stack<>();
     private SymbolTable.Type type;
     private SymbolTable.DataType dataType;
-    private PCodeGenerator pCodeGenerator = new PCodeGenerator();
 
-    private int level;
-    private int nVariables;
+    private PCodeGenerator pCodeGenerator = new PCodeGenerator();
     private int ip;
 
     public Parser(Scanner scanner) {
@@ -58,8 +57,7 @@ public class Parser {
         if (!is(Tag.IDENTIFIER)) {
             printError("Error: Debe ser identificador " + token.getLexeme());
         }
-        symbolTables.peek().add(token.getLexeme(), type, dataType, level, nVariables);
-        nVariables++;
+        symbolTables.peek().add(token.getLexeme(), type, dataType);
         getToken();
     }
 
@@ -69,7 +67,7 @@ public class Parser {
             return true;
         } else if (matches(Tag.ARRAY)) {
             matches(Tag.L_BRACKET, "[");
-            if (!matches(Tag.INTEGER)){
+            if (!matches(Tag.INTEGER)) {
                 printError("Error: Debe ser entero");
             }
             matches(Tag.R_BRACKET, "]");
@@ -78,9 +76,9 @@ public class Parser {
             }
             this.type = SymbolTable.Type.ARRAY;
             return true;
-        } else if (matches(Tag.STR)){
+        } else if (matches(Tag.STR)) {
             matches(Tag.L_BRACKET, "[");
-            if (!matches(Tag.INTEGER)){
+            if (!matches(Tag.INTEGER)) {
                 printError("Error: Debe ser entero");
             }
             matches(Tag.R_BRACKET, "]");
@@ -92,16 +90,16 @@ public class Parser {
     }
 
     private boolean basicType() {
-        if (matches(Tag.INT)){
+        if (matches(Tag.INT)) {
             this.dataType = SymbolTable.DataType.INTEGER;
             return true;
-        }else if (matches(Tag.DEC)){
+        } else if (matches(Tag.DEC)) {
             this.dataType = SymbolTable.DataType.DECIMAL;
             return true;
-        }else if (matches(Tag.BOO)){
+        } else if (matches(Tag.BOO)) {
             this.dataType = SymbolTable.DataType.BOOLEAN;
             return true;
-        }else if (matches(Tag.CHAR)){
+        } else if (matches(Tag.CHAR)) {
             this.dataType = SymbolTable.DataType.CHARACTER;
             return true;
         }
@@ -112,7 +110,7 @@ public class Parser {
         while (matches(Tag.FUNCTION)) {
             type();
             if (matches(Tag.IDENTIFIER)) {
-                symbolTables.peek().add(lastToken.getLexeme(), SymbolTable.Type.FUNCTION, dataType,0, 0);
+                symbolTables.peek().add(lastToken.getLexeme(), SymbolTable.Type.FUNCTION, dataType);
             }
             addSymbolTable();
             parameters();
@@ -281,6 +279,7 @@ public class Parser {
     }
 
     private void functionCall() {
+        matches(Tag.L_PARENTHESIS, "(");
         if (is(Tag.IDENTIFIER)) {
             Symbol symbol = symbolTables.peek().get(token.getLexeme());
             if (symbol == null) {
@@ -288,12 +287,12 @@ public class Parser {
             } else if (symbol.getType() != SymbolTable.Type.FUNCTION) {
                 printError("Error: Identificador " + token.getLexeme() + " debe ser funcion");
             }
-            pCodeGenerator.generate(new PInstruction(PCode.LLA, level - symbol.getLevel(), symbol.getAddress()));
             getToken();
         } else {
             printError("Error: Call debe ir seguido de un identificador");
         }
         arguments();
+        matches(Tag.R_PARENTHESIS, ")");
     }
 
     private void relational() {
@@ -356,23 +355,21 @@ public class Parser {
 
     private void addSymbolTable() {
         symbolTables.push(new SymbolTable(symbolTables.peek()));
-        level++;
     }
 
     private void removeSymbolTable() {
         symbolTables.pop();
-        level--;
     }
 
     private void printError(String error) {
-        ErrorLog.logError(error.concat(" Line: " + (scanner.getLine() - 1)));
+        ErrorLog.logError(error.concat(" Line: " + token.getLine()));
         Main.close();
     }
 
-    private void printSymbolTable(){
+    private void printSymbolTable() {
         System.out.println();
         System.out.println("Symbol Table:");
-        for (SymbolTable st:symbolTables){
+        for (SymbolTable st : symbolTables) {
             st.printSymbols();
         }
     }
