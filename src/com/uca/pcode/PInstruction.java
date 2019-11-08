@@ -6,6 +6,10 @@ public class PInstruction {
     private int level;
     private int address;
 
+    public PInstruction(PCode instruction){
+        this.instruction = instruction;
+    }
+
     public PInstruction(PCode instruction, int level, int address){
         this.instruction = instruction;
         this.level = level;
@@ -34,5 +38,9 @@ public class PInstruction {
 
     public void setAddress(int address) {
         this.address = address;
+    }
+
+    public String toString(){
+        return instruction.toString()+" "+level+" "+address;
     }
 }

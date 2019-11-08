@@ -1,0 +1,4 @@
+LIT 0 3
+LIT 0 2
+LIT 0 6.734
+LIT 0 "a b c"

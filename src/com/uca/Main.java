@@ -1,6 +1,7 @@
 package com.uca;
 
 import com.uca.parser.Parser;
+import com.uca.pcode.PCodeGenerator;
 import com.uca.scanner.Lexicon;
 import com.uca.scanner.Scanner;
 import com.uca.tools.ErrorLog;
@@ -27,7 +28,8 @@ public class Main {
         ErrorLog.init();
         Lexicon.init();
         scanner = new Scanner();
-        Parser parser = new Parser(scanner);
+        PCodeGenerator pCodeGenerator = new PCodeGenerator(fileName);
+        Parser parser = new Parser(scanner, pCodeGenerator);
 
         scanner.scan(fileName);
         parser.parse();

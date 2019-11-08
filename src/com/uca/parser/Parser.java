@@ -1,7 +1,7 @@
 package com.uca.parser;
 
-import com.uca.pcode.PCode;
-import com.uca.pcode.PInstruction;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.uca.scanner.TokenValue;
 import com.uca.tools.ErrorLog;
 import com.uca.Main;
 import com.uca.pcode.PCodeGenerator;
@@ -21,11 +21,11 @@ public class Parser {
     private SymbolTable.Type type;
     private SymbolTable.DataType dataType;
 
-    private PCodeGenerator pCodeGenerator = new PCodeGenerator();
-    private int ip;
+    private PCodeGenerator pCodeGenerator;
 
-    public Parser(Scanner scanner) {
+    public Parser(Scanner scanner, PCodeGenerator pCodeGenerator) {
         this.scanner = scanner;
+        this.pCodeGenerator = pCodeGenerator;
     }
 
     public void parse() {
@@ -41,6 +41,21 @@ public class Parser {
         declarations();
         functions();
         main();
+    }
+
+    private void main() {
+        while (!scanner.isEndOfFile()) {
+            statement();
+        }
+    }
+
+    private void block() {
+        addSymbolTable();
+        matches(Tag.L_BRACE, "{");
+        while (!matches(Tag.R_BRACE)) {
+            statement();
+        }
+        removeSymbolTable();
     }
 
     private void declarations() {
@@ -76,15 +91,6 @@ public class Parser {
             }
             this.type = SymbolTable.Type.ARRAY;
             return true;
-        } else if (matches(Tag.STR)) {
-            matches(Tag.L_BRACKET, "[");
-            if (!matches(Tag.INTEGER)) {
-                printError("Error: Debe ser entero");
-            }
-            matches(Tag.R_BRACKET, "]");
-            this.type = SymbolTable.Type.ARRAY;
-            this.dataType = SymbolTable.DataType.STRING;
-            return true;
         }
         return false;
     }
@@ -101,6 +107,9 @@ public class Parser {
             return true;
         } else if (matches(Tag.CHAR)) {
             this.dataType = SymbolTable.DataType.CHARACTER;
+            return true;
+        } else if (matches(Tag.STR)) {
+            this.dataType = SymbolTable.DataType.STRING;
             return true;
         }
         return false;
@@ -119,21 +128,6 @@ public class Parser {
         }
     }
 
-    private void main() {
-        while (!scanner.isEndOfFile()) {
-            statement();
-        }
-    }
-
-    private void block() {
-        addSymbolTable();
-        matches(Tag.L_BRACE, "{");
-        while (!matches(Tag.R_BRACE)) {
-            statement();
-        }
-        removeSymbolTable();
-    }
-
     private void functionBlock() {
         addSymbolTable();
         matches(Tag.L_BRACE, "{");
@@ -145,6 +139,43 @@ public class Parser {
         matches(Tag.SEMICOLON, ";");
         matches(Tag.R_BRACE, "}");
         removeSymbolTable();
+    }
+
+    private void functionCall() {
+        matches(Tag.L_PARENTHESIS, "(");
+        if (is(Tag.IDENTIFIER)) {
+            Symbol symbol = symbolTables.peek().get(token.getLexeme());
+            if (symbol == null) {
+                printError("Error: No se ha declarado la funcion " + token.getLexeme());
+            } else if (symbol.getType() != SymbolTable.Type.FUNCTION) {
+                printError("Error: Identificador " + token.getLexeme() + " debe ser funcion");
+            }
+            getToken();
+        } else {
+            printError("Error: Call debe ir seguido de un identificador");
+        }
+        arguments();
+        matches(Tag.R_PARENTHESIS, ")");
+    }
+
+    private void parameters() {
+        matches(Tag.L_PARENTHESIS, "(");
+        type();
+        declaration();
+        while (matches(Tag.COLON)) {
+            type();
+            declaration();
+        }
+        matches(Tag.R_PARENTHESIS, ")");
+    }
+
+    private void arguments() {
+        matches(Tag.L_PARENTHESIS, "(");
+        expression();
+        while (matches(Tag.COLON)) {
+            expression();
+        }
+        matches(Tag.R_PARENTHESIS, ")");
     }
 
     private void ifBlock() {
@@ -204,24 +235,12 @@ public class Parser {
         }
     }
 
-    private void parameters() {
-        matches(Tag.L_PARENTHESIS, "(");
-        type();
-        declaration();
-        while (matches(Tag.COLON)) {
-            type();
-            declaration();
+    private void assignment() {
+        if (!matches(Tag.EQUAL)) {
+            printError("Error: Se esperaba operador de asignacion =");
         }
-        matches(Tag.R_PARENTHESIS, ")");
-    }
-
-    private void arguments() {
-        matches(Tag.L_PARENTHESIS, "(");
         expression();
-        while (matches(Tag.COLON)) {
-            expression();
-        }
-        matches(Tag.R_PARENTHESIS, ")");
+        matches(Tag.SEMICOLON, ";");
     }
 
     private void conditions() {
@@ -237,12 +256,12 @@ public class Parser {
         expression();
     }
 
-    private void assignment() {
-        if (!matches(Tag.EQUAL)) {
-            printError("Error: Se esperaba operador de asignacion =");
+    private void relational() {
+        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)) {
+
+        } else {
+            printError("Error: " + token.getLexeme() + " no es operador relacional");
         }
-        expression();
-        matches(Tag.SEMICOLON, ";");
     }
 
     private void expression() {
@@ -260,7 +279,16 @@ public class Parser {
     }
 
     private void factor() {
-        if (matches(Tag.INTEGER) || matches(Tag.DECIMAL) || matches(Tag.STRING) || matches(Tag.CHARACTER) || matches(Tag.TRUE) || matches(Tag.FALSE)) {
+        if (matches(Tag.INTEGER)) {
+            pCodeGenerator.generateValue(((TokenValue<Integer>) lastToken).getValue());
+        } else if (matches(Tag.DECIMAL)) {
+            pCodeGenerator.generateValue(((TokenValue<Double>) lastToken).getValue());
+        } else if (matches(Tag.CHARACTER)) {
+            pCodeGenerator.generateValue(((TokenValue<Character>) lastToken).getValue());
+        } else if (matches(Tag.STRING)) {
+            pCodeGenerator.generateValue(((TokenValue<String>) lastToken).getValue());
+        } else if (matches(Tag.TRUE) || matches(Tag.FALSE)) {
+            pCodeGenerator.generateValue(((TokenValue<Boolean>) lastToken).getValue());
         } else if (location()) {
         } else if (matches(Tag.L_PARENTHESIS)) {
             expression();
@@ -272,53 +300,26 @@ public class Parser {
         }
     }
 
+    private boolean location() {
+        if (matches(Tag.IDENTIFIER)) {
+            Symbol symbol = symbolTables.peek().get(lastToken.getLexeme());
+            if (symbol == null) {
+                printError("Error: No se ha declarado la variable " + lastToken.getLexeme());
+            } else if (symbol.getType() == SymbolTable.Type.ARRAY) {
+                arrayOperator();
+                return true;
+            } else if (symbol.getType() != SymbolTable.Type.VARIABLE) {
+                printError("Error: Identificador " + lastToken.getLexeme() + " debe ser una variable");
+            }
+            return true;
+        }
+        return false;
+    }
+
     private void arrayOperator() {
         matches(Tag.L_BRACKET, "[");
         expression();
         matches(Tag.R_BRACKET, "]");
-    }
-
-    private void functionCall() {
-        matches(Tag.L_PARENTHESIS, "(");
-        if (is(Tag.IDENTIFIER)) {
-            Symbol symbol = symbolTables.peek().get(token.getLexeme());
-            if (symbol == null) {
-                printError("Error: No se ha declarado la funcion " + token.getLexeme());
-            } else if (symbol.getType() != SymbolTable.Type.FUNCTION) {
-                printError("Error: Identificador " + token.getLexeme() + " debe ser funcion");
-            }
-            getToken();
-        } else {
-            printError("Error: Call debe ir seguido de un identificador");
-        }
-        arguments();
-        matches(Tag.R_PARENTHESIS, ")");
-    }
-
-    private void relational() {
-        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)) {
-
-        } else {
-            printError("Error: " + token.getLexeme() + " no es operador relacional");
-        }
-    }
-
-    private boolean location() {
-        if (is(Tag.IDENTIFIER)) {
-            Symbol symbol = symbolTables.peek().get(token.getLexeme());
-            if (symbol == null) {
-                printError("Error: No se ha declarado la variable " + token.getLexeme());
-            } else if (symbol.getType() == SymbolTable.Type.ARRAY) {
-                getToken();
-                arrayOperator();
-                return true;
-            } else if (symbol.getType() != SymbolTable.Type.VARIABLE) {
-                printError("Error: Identificador " + token.getLexeme() + " debe ser una variable");
-            }
-            getToken();
-            return true;
-        }
-        return false;
     }
 
     private boolean is(Tag tag) {

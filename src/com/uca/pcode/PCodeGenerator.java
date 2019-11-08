@@ -8,29 +8,53 @@ import java.util.List;
 public class PCodeGenerator {
 
     private List<PInstruction> pCode = new ArrayList<>();
-    private int index;
+    private int ip;
+    private String fileName;
+
+    public PCodeGenerator(String fileName){
+        this.fileName = fileName.split("\\.")[0];
+    }
 
     public void generate(PInstruction pInstruction){
         pCode.add(pInstruction);
-        index++;
+        ip++;
+    }
+
+    public void generateValue(int value){
+        generate(new LIT<Integer>(value));
+    }
+
+    public void generateValue(double value){
+        generate(new LIT<Double>(value));
+    }
+
+    public void generateValue(char value){
+        generate(new LIT<Character>(value));
+    }
+
+    public void generateValue(String value){
+        generate(new LIT<String>(value));
+    }
+
+    public void generateValue(boolean value){
+        generate(new LIT<Boolean>(value));
     }
 
     public void printPCode(){
         System.out.println();
         System.out.println("P Code:");
         for (PInstruction p:pCode){
-            System.out.println(p.getInstruction().toString()+" "+p.getLevel()+" "+p.getAddress());
+            System.out.println(p.toString());
         }
     }
 
     public void savePCode(){
-        FileManager file = new FileManager("output/code.p");
+        FileManager file = new FileManager("output/"+fileName+".p");
         file.createFile();
-        file.openFile();
         file.clearFile();
         for (PInstruction p:pCode){
-            file.writeLine(p.getInstruction().toString()+" "+p.getLevel()+" "+p.getAddress());
+            file.writeLine(p.toString());
         }
-        file.clearFile();
+        file.closeFile();
     }
 }

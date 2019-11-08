@@ -1,6 +1,8 @@
 int x;
 int y;
 int z;
+str s;
+dec a;
 
 function int suma(int n1, int n2){
     return n1+n2;
@@ -8,5 +10,7 @@ function int suma(int n1, int n2){
 
 x = 3;
 y = 2;
+a = 6.734;
+s= "a b c";
 z = x+y;
 z = call(suma(x,y));

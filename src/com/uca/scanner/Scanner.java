@@ -283,9 +283,10 @@ public class Scanner {
 
     private Token createStringToken(Tag tag) {
         String value = "";
-        if (lexeme.length() >= 3) {
-            value = lexeme.substring(1, lexeme.length() - 2);
-        }
+        /*if (lexeme.length() >= 3) {
+            value = lexeme.substring(1, lexeme.length() - 1);
+        }*/
+        value = lexeme;
         return new TokenValue<String>(tag, lexeme, value);
     }
 

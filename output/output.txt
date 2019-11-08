@@ -7,6 +7,12 @@ y -> IDENTIFIER
 int -> INT
 z -> IDENTIFIER
 ; -> SEMICOLON
+str -> STR
+s -> IDENTIFIER
+; -> SEMICOLON
+dec -> DEC
+a -> IDENTIFIER
+; -> SEMICOLON
 function -> FUNCTION
 int -> INT
 suma -> IDENTIFIER
@@ -31,6 +37,14 @@ x -> IDENTIFIER
 y -> IDENTIFIER
 = -> EQUAL
 2 -> INTEGER
+; -> SEMICOLON
+a -> IDENTIFIER
+= -> EQUAL
+6.734 -> DECIMAL
+; -> SEMICOLON
+s -> IDENTIFIER
+= -> EQUAL
+"a b c" -> STRING
 ; -> SEMICOLON
 z -> IDENTIFIER
 = -> EQUAL
