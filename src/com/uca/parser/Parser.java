@@ -292,6 +292,8 @@ public class Parser {
         } else if (matches(Tag.TRUE) || matches(Tag.FALSE)) {
             pCodeGenerator.generateValue(((TokenValue<Boolean>) lastToken).getValue());
         } else if (location()) {
+            Symbol s = symbolTables.peek().get(lastToken.getLexeme());
+            pCodeGenerator.generateVariable(symbolTables.peek().getLevel()-s.getLevel(), s.getAddress());
         } else if (matches(Tag.L_PARENTHESIS)) {
             expression();
             matches(Tag.R_PARENTHESIS, ")");

@@ -1,3 +1,5 @@
+CAR 1 0
+CAR 1 1
 LIT 0 3
 ALM 0 0
 LIT 0 2
@@ -6,5 +8,9 @@ LIT 0 6.734
 ALM 0 4
 LIT 0 "a b c"
 ALM 0 3
+CAR 0 0
+CAR 0 1
 ALM 0 2
+CAR 0 0
+CAR 0 1
 ALM 0 2

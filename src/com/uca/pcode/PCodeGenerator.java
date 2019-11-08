@@ -44,6 +44,10 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.ALM, level, address));
     }
 
+    public void generateVariable(int level, int address){
+        generate(new PInstruction(PCode.CAR, level, address));
+    }
+
     public void printPCode(){
         System.out.println();
         System.out.println("P Code:");
