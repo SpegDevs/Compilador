@@ -1,4 +1,10 @@
 LIT 0 3
+ALM 0 0
 LIT 0 2
+ALM 0 1
 LIT 0 6.734
+ALM 0 4
 LIT 0 "a b c"
+ALM 0 3
+ALM 0 2
+ALM 0 2

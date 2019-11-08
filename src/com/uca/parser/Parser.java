@@ -236,11 +236,13 @@ public class Parser {
     }
 
     private void assignment() {
+        Symbol s = symbolTables.peek().get(lastToken.getLexeme());
         if (!matches(Tag.EQUAL)) {
             printError("Error: Se esperaba operador de asignacion =");
         }
         expression();
         matches(Tag.SEMICOLON, ";");
+        pCodeGenerator.generateAssignment(symbolTables.peek().getLevel()-s.getLevel(), s.getAddress());
     }
 
     private void conditions() {

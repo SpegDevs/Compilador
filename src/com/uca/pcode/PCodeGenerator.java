@@ -40,6 +40,10 @@ public class PCodeGenerator {
         generate(new LIT<Boolean>(value));
     }
 
+    public void generateAssignment(int level, int address){
+        generate(new PInstruction(PCode.ALM, level, address));
+    }
+
     public void printPCode(){
         System.out.println();
         System.out.println("P Code:");
