@@ -48,6 +48,22 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.CAR, level, address));
     }
 
+    public void generateSum(){
+        generate(new PInstruction(PCode.OPR, 0, 1));
+    }
+
+    public void generateSubstract(){
+        generate(new PInstruction(PCode.OPR, 0, 2));
+    }
+
+    public void generateMultiplication(){
+        generate(new PInstruction(PCode.OPR, 0, 3));
+    }
+
+    public void generateDivision(){
+        generate(new PInstruction(PCode.OPR, 0, 4));
+    }
+
     public void printPCode(){
         System.out.println();
         System.out.println("P Code:");

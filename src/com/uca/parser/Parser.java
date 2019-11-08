@@ -269,14 +269,26 @@ public class Parser {
     private void expression() {
         term();
         while (matches(Tag.PLUS) || matches(Tag.MINUS)) {
+            Token op = lastToken;
             term();
+            if (op.getTag() == Tag.PLUS){
+                pCodeGenerator.generateSum();
+            }else{
+                pCodeGenerator.generateSubstract();
+            }
         }
     }
 
     private void term() {
         factor();
         while (matches(Tag.MULTIPLICATION) || matches(Tag.DIVISION)) {
+            Token op = lastToken;
             factor();
+            if (op.getTag() == Tag.MULTIPLICATION){
+                pCodeGenerator.generateMultiplication();
+            }else{
+                pCodeGenerator.generateDivision();
+            }
         }
     }
 

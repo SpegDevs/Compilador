@@ -1,5 +1,6 @@
 CAR 1 0
 CAR 1 1
+OPR 0 1
 LIT 0 3
 ALM 0 0
 LIT 0 2
@@ -10,6 +11,7 @@ LIT 0 "a b c"
 ALM 0 3
 CAR 0 0
 CAR 0 1
+OPR 0 3
 ALM 0 2
 CAR 0 0
 CAR 0 1

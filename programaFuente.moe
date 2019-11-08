@@ -12,5 +12,5 @@ x = 3;
 y = 2;
 a = 6.734;
 s= "a b c";
-z = x+y;
+z = x*y;
 z = call(suma(x,y));
