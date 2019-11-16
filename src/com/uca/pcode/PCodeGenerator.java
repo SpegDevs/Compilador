@@ -101,6 +101,20 @@ public class PCodeGenerator {
         return ip;
     }
 
+    public void generateConditionalJump(int location){
+        generate(new PInstruction(PCode.SAC, 0, location));
+    }
+
+    public int generateInverseJump(){
+        generate(new PInstruction(PCode.SAI, 0, 0));
+        return ip;
+    }
+
+    public void generateInverseJump(int location){
+        generate(new PInstruction(PCode.SAI, 0, location));
+    }
+
+
     public int generateJump(){
         generate(new PInstruction(PCode.SAL, 0, 0));
         return ip;

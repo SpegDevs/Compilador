@@ -183,14 +183,14 @@ public class Parser {
         matches(Tag.L_PARENTHESIS, "(");
         conditions();
         matches(Tag.R_PARENTHESIS, ")");
-        int i = pCodeGenerator.generateConditionalJump();
+        int jumpToElse = pCodeGenerator.generateConditionalJump();
         block();
-        int i2 = pCodeGenerator.generateJump();
-        pCodeGenerator.setJumpLocation(i);
+        int jumpToExit = pCodeGenerator.generateJump();
+        pCodeGenerator.setJumpLocation(jumpToElse);
         if (matches(Tag.IFNOT)) {
             block();
         }
-        pCodeGenerator.setJumpLocation(i2);
+        pCodeGenerator.setJumpLocation(jumpToExit);
     }
 
     private void forBlock() {
@@ -215,22 +215,24 @@ public class Parser {
     }
 
     private void whileBlock() {
-        int ip = pCodeGenerator.getIp();
+        int conditionLocation = pCodeGenerator.getIp();
         matches(Tag.L_PARENTHESIS, "(");
         conditions();
         matches(Tag.R_PARENTHESIS, ")");
-        int i = pCodeGenerator.generateConditionalJump();
+        int jumpTpExit = pCodeGenerator.generateConditionalJump();
         block();
-        pCodeGenerator.generateJump(ip);
-        pCodeGenerator.setJumpLocation(i);
+        pCodeGenerator.generateJump(conditionLocation);
+        pCodeGenerator.setJumpLocation(jumpTpExit);
     }
 
     private void doWhileBlock() {
+        int startLocation = pCodeGenerator.getIp();
         block();
         matches(Tag.WHILE, "while");
         matches(Tag.L_PARENTHESIS, "(");
         conditions();
         matches(Tag.R_PARENTHESIS, ")");
+        pCodeGenerator.generateInverseJump(startLocation);
     }
 
     private void statement() {

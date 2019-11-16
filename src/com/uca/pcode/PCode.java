@@ -8,5 +8,6 @@ public enum PCode {
     LLA,
     INS,
     SAL,
-    SAC
+    SAC,
+    SAI
 }
