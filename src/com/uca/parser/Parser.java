@@ -1,6 +1,5 @@
 package com.uca.parser;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.uca.scanner.TokenValue;
 import com.uca.tools.ErrorLog;
 import com.uca.Main;
@@ -44,6 +43,7 @@ public class Parser {
     }
 
     private void main() {
+        pCodeGenerator.generateINS(symbolTables.peek().getnVariables());
         while (!scanner.isEndOfFile()) {
             statement();
         }
@@ -274,7 +274,7 @@ public class Parser {
             if (op.getTag() == Tag.PLUS){
                 pCodeGenerator.generateSum();
             }else{
-                pCodeGenerator.generateSubstract();
+                pCodeGenerator.generateSubtract();
             }
         }
     }

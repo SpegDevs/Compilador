@@ -3,9 +3,11 @@ package com.uca.pcode;
 public class LIT<DataType> extends PInstruction{
 
     private DataType value;
+    private int type;
 
-    public LIT(DataType value) {
+    public LIT(int type, DataType value) {
         super(PCode.LIT);
+        this.type = type;
         this.value = value;
     }
 
@@ -19,6 +21,6 @@ public class LIT<DataType> extends PInstruction{
 
     @Override
     public String toString(){
-        return getInstruction().toString()+" 0 "+value;
+        return getInstruction().toString()+" "+type+" "+value;
     }
 }

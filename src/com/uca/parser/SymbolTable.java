@@ -15,7 +15,7 @@ public class SymbolTable {
     private HashMap<String, Symbol> table = new HashMap<>();
     private SymbolTable previous;
     private int level;
-    private int nVariables;
+    private int nVariables = 3;
 
     public SymbolTable(SymbolTable previous) {
         this.previous = previous;

@@ -20,24 +20,28 @@ public class PCodeGenerator {
         ip++;
     }
 
+    public void generateINS(int n){
+        generate(new PInstruction(PCode.INS, 0, n));
+    }
+
     public void generateValue(int value){
-        generate(new LIT<Integer>(value));
+        generate(new LIT<Integer>(0,value));
     }
 
     public void generateValue(double value){
-        generate(new LIT<Double>(value));
+        generate(new LIT<Double>(1,value));
     }
 
     public void generateValue(char value){
-        generate(new LIT<Character>(value));
+        generate(new LIT<Character>(2,value));
     }
 
     public void generateValue(String value){
-        generate(new LIT<String>(value));
+        generate(new LIT<String>(3,value));
     }
 
     public void generateValue(boolean value){
-        generate(new LIT<Boolean>(value));
+        generate(new LIT<Boolean>(4,value));
     }
 
     public void generateAssignment(int level, int address){
@@ -49,19 +53,19 @@ public class PCodeGenerator {
     }
 
     public void generateSum(){
-        generate(new PInstruction(PCode.OPR, 0, 1));
-    }
-
-    public void generateSubstract(){
-        generate(new PInstruction(PCode.OPR, 0, 2));
-    }
-
-    public void generateMultiplication(){
         generate(new PInstruction(PCode.OPR, 0, 3));
     }
 
-    public void generateDivision(){
+    public void generateSubtract(){
         generate(new PInstruction(PCode.OPR, 0, 4));
+    }
+
+    public void generateMultiplication(){
+        generate(new PInstruction(PCode.OPR, 0, 5));
+    }
+
+    public void generateDivision(){
+        generate(new PInstruction(PCode.OPR, 0, 6));
     }
 
     public void printPCode(){
