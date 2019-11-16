@@ -197,13 +197,21 @@ public class Parser {
         matches(Tag.L_PARENTHESIS, "(");
         location();
         assignment();
+        int conditionLocation = pCodeGenerator.getIp();
         matches(Tag.SEMICOLON, ";");
         conditions();
+        int jumpToExit = pCodeGenerator.generateConditionalJump();
+        int jumpToBody = pCodeGenerator.generateJump();
         matches(Tag.SEMICOLON, ";");
+        int assignmentLocation = pCodeGenerator.getIp();
         location();
         assignment();
+        pCodeGenerator.generateJump(conditionLocation);
         matches(Tag.R_PARENTHESIS, ")");
+        pCodeGenerator.setJumpLocation(jumpToBody);
         block();
+        pCodeGenerator.generateJump(assignmentLocation);
+        pCodeGenerator.setJumpLocation(jumpToExit);
     }
 
     private void whileBlock() {
@@ -228,6 +236,7 @@ public class Parser {
     private void statement() {
         if (location()) {
             assignment();
+            matches(Tag.SEMICOLON, ";");
         } else if (matches(Tag.IF)) {
             ifBlock();
         } else if (matches(Tag.FOR)) {
@@ -250,7 +259,6 @@ public class Parser {
             printError("Error: Se esperaba operador de asignacion =");
         }
         expression();
-        matches(Tag.SEMICOLON, ";");
         pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
     }
 
