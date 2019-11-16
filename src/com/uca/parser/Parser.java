@@ -47,15 +47,16 @@ public class Parser {
         while (!scanner.isEndOfFile()) {
             statement();
         }
+        pCodeGenerator.generateReturn();
     }
 
     private void block() {
-        addSymbolTable();
+        //addSymbolTable();
         matches(Tag.L_BRACE, "{");
         while (!matches(Tag.R_BRACE)) {
             statement();
         }
-        removeSymbolTable();
+        //removeSymbolTable();
     }
 
     private void declarations() {
@@ -182,10 +183,14 @@ public class Parser {
         matches(Tag.L_PARENTHESIS, "(");
         conditions();
         matches(Tag.R_PARENTHESIS, ")");
+        int i = pCodeGenerator.generateConditionalJump();
         block();
+        int i2 = pCodeGenerator.generateJump();
+        pCodeGenerator.setJumpLocation(i);
         if (matches(Tag.IFNOT)) {
             block();
         }
+        pCodeGenerator.setJumpLocation(i2);
     }
 
     private void forBlock() {
@@ -242,7 +247,7 @@ public class Parser {
         }
         expression();
         matches(Tag.SEMICOLON, ";");
-        pCodeGenerator.generateAssignment(symbolTables.peek().getLevel()-s.getLevel(), s.getAddress());
+        pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
     }
 
     private void conditions() {
@@ -255,13 +260,34 @@ public class Parser {
     private void condition() {
         expression();
         relational();
+        Token op = lastToken;
         expression();
+        switch (op.getTag()){
+            case EQUAL_EQUAL:
+                pCodeGenerator.generateEqual();
+                break;
+            case NOT_EQUAL:
+                pCodeGenerator.generateNotEqual();
+                break;
+            case LESS_THAN:
+                pCodeGenerator.generateLessThan();
+                break;
+            case LESS_THAN_EQUAL:
+                pCodeGenerator.generateLessThanEqual();
+                break;
+            case GREATER_THAN:
+                pCodeGenerator.generateGreaterThan();
+                break;
+            case GREATER_THAN_EQUAL:
+                pCodeGenerator.generateGreaterThanEqual();
+                break;
+        }
     }
 
     private void relational() {
-        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL)) {
+        if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL)) {
 
-        } else {
+        } else{
             printError("Error: " + token.getLexeme() + " no es operador relacional");
         }
     }
@@ -271,9 +297,9 @@ public class Parser {
         while (matches(Tag.PLUS) || matches(Tag.MINUS)) {
             Token op = lastToken;
             term();
-            if (op.getTag() == Tag.PLUS){
+            if (op.getTag() == Tag.PLUS) {
                 pCodeGenerator.generateSum();
-            }else{
+            } else {
                 pCodeGenerator.generateSubtract();
             }
         }
@@ -284,9 +310,9 @@ public class Parser {
         while (matches(Tag.MULTIPLICATION) || matches(Tag.DIVISION)) {
             Token op = lastToken;
             factor();
-            if (op.getTag() == Tag.MULTIPLICATION){
+            if (op.getTag() == Tag.MULTIPLICATION) {
                 pCodeGenerator.generateMultiplication();
-            }else{
+            } else {
                 pCodeGenerator.generateDivision();
             }
         }
@@ -305,7 +331,7 @@ public class Parser {
             pCodeGenerator.generateValue(((TokenValue<Boolean>) lastToken).getValue());
         } else if (location()) {
             Symbol s = symbolTables.peek().get(lastToken.getLexeme());
-            pCodeGenerator.generateVariable(symbolTables.peek().getLevel()-s.getLevel(), s.getAddress());
+            pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
         } else if (matches(Tag.L_PARENTHESIS)) {
             expression();
             matches(Tag.R_PARENTHESIS, ")");

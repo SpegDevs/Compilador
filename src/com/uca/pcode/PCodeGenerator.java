@@ -52,6 +52,10 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.CAR, level, address));
     }
 
+    public void generateReturn(){
+        generate(new PInstruction(PCode.OPR, 0, 0));
+    }
+
     public void generateSum(){
         generate(new PInstruction(PCode.OPR, 0, 3));
     }
@@ -66,6 +70,44 @@ public class PCodeGenerator {
 
     public void generateDivision(){
         generate(new PInstruction(PCode.OPR, 0, 6));
+    }
+
+    public void generateEqual(){
+        generate(new PInstruction(PCode.OPR, 0, 7));
+    }
+
+    public void generateNotEqual(){
+        generate(new PInstruction(PCode.OPR, 0, 8));
+    }
+
+    public void generateLessThan(){
+        generate(new PInstruction(PCode.OPR, 0, 9));
+    }
+
+    public void generateLessThanEqual(){
+        generate(new PInstruction(PCode.OPR, 0, 10));
+    }
+
+    public void generateGreaterThan(){
+        generate(new PInstruction(PCode.OPR, 0, 11));
+    }
+
+    public void generateGreaterThanEqual(){
+        generate(new PInstruction(PCode.OPR, 0, 12));
+    }
+
+    public int generateConditionalJump(){
+        generate(new PInstruction(PCode.SAC, 0, 0));
+        return ip;
+    }
+
+    public int generateJump(){
+        generate(new PInstruction(PCode.SAL, 0, 0));
+        return ip;
+    }
+
+    public void setJumpLocation(int index){
+        this.pCode.get(index-1).setAddress(ip);
     }
 
     public void printPCode(){

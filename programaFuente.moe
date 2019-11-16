@@ -4,4 +4,8 @@ int z;
 
 x = 3;
 y = 2;
-z = x*y+x;
+if (x > y){
+    z = x+y;
+}ifnot{
+    z = x-y;
+}
