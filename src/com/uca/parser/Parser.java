@@ -207,10 +207,14 @@ public class Parser {
     }
 
     private void whileBlock() {
+        int ip = pCodeGenerator.getIp();
         matches(Tag.L_PARENTHESIS, "(");
         conditions();
         matches(Tag.R_PARENTHESIS, ")");
+        int i = pCodeGenerator.generateConditionalJump();
         block();
+        pCodeGenerator.generateJump(ip);
+        pCodeGenerator.setJumpLocation(i);
     }
 
     private void doWhileBlock() {

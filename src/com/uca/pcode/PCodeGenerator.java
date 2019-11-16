@@ -106,8 +106,16 @@ public class PCodeGenerator {
         return ip;
     }
 
+    public void generateJump(int location){
+        generate(new PInstruction(PCode.SAL, 0, location));
+    }
+
     public void setJumpLocation(int index){
         this.pCode.get(index-1).setAddress(ip);
+    }
+
+    public int getIp(){
+        return ip;
     }
 
     public void printPCode(){
