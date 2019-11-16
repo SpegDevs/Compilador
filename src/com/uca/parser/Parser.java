@@ -267,7 +267,13 @@ public class Parser {
     private void conditions() {
         condition();
         while (matches(Tag.AND) || matches(Tag.OR)) {
+            Token op = lastToken;
             condition();
+            if (op.getTag() == Tag.AND) {
+                pCodeGenerator.generateAnd();
+            } else {
+                pCodeGenerator.generateOr();
+            }
         }
     }
 

@@ -96,6 +96,14 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.OPR, 0, 12));
     }
 
+    public void generateAnd(){
+        generate(new PInstruction(PCode.OPR, 0, 13));
+    }
+
+    public void generateOr(){
+        generate(new PInstruction(PCode.OPR, 0, 14));
+    }
+
     public int generateConditionalJump(){
         generate(new PInstruction(PCode.SAC, 0, 0));
         return ip;
