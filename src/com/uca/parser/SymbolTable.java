@@ -24,9 +24,9 @@ public class SymbolTable {
         }
     }
 
-    public void add(String id, Type type, DataType dataType) {
+    public void add(String id, Type type, DataType dataType, int offset) {
         table.put(id, new Symbol(id, type, dataType, level, nVariables));
-        nVariables++;
+        nVariables += offset;
     }
 
     public Symbol get(String id) {

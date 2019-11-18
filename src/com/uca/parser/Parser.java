@@ -15,10 +15,12 @@ public class Parser {
     private Scanner scanner;
     private Token token;
     private Token lastToken;
+    private Token auxToken;
 
     private Stack<SymbolTable> symbolTables = new Stack<>();
     private SymbolTable.Type type;
     private SymbolTable.DataType dataType;
+    private int offset;
 
     private PCodeGenerator pCodeGenerator;
 
@@ -37,13 +39,15 @@ public class Parser {
 
     private void program() {
         symbolTables.push(new SymbolTable(null));
+        int jumpToMain = pCodeGenerator.generateJump();
         declarations();
         functions();
+        pCodeGenerator.setJumpLocation(jumpToMain);
         main();
     }
 
     private void main() {
-        pCodeGenerator.generateINS(symbolTables.peek().getnVariables());
+        pCodeGenerator.generateAllocate(symbolTables.peek().getnVariables());
         while (!scanner.isEndOfFile()) {
             statement();
         }
@@ -64,11 +68,13 @@ public class Parser {
         }
     }
 
-    private void declaration() {
+    private void declaration(){
+        type();
         if (!matches(Tag.IDENTIFIER)) {
             printError("Error: Debe ser identificador " + lastToken.getLexeme());
         }
-        addSymbol(lastToken.getLexeme(), type, dataType);
+        addSymbol(lastToken.getLexeme(), type, dataType, offset);
+        offset = 1;
     }
 
     private boolean type() {
@@ -84,6 +90,7 @@ public class Parser {
             if (!matches(Tag.INTEGER)) {
                 printError("Error: Debe ser entero");
             }
+            this.offset = ((TokenValue<Integer>)lastToken).getValue();
             matches(Tag.R_BRACKET, "]");
             this.type = SymbolTable.Type.ARRAY;
             return true;
@@ -156,10 +163,8 @@ public class Parser {
 
     private void parameters() {
         matches(Tag.L_PARENTHESIS, "(");
-        type();
         declaration();
         while (matches(Tag.COLON)) {
-            type();
             declaration();
         }
         matches(Tag.R_PARENTHESIS, ")");
@@ -190,7 +195,6 @@ public class Parser {
 
     private void forBlock() {
         matches(Tag.L_PARENTHESIS, "(");
-        location();
         assignment();
         int conditionLocation = pCodeGenerator.getIp();
         matches(Tag.SEMICOLON, ";");
@@ -199,7 +203,6 @@ public class Parser {
         int jumpToBody = pCodeGenerator.generateJump();
         matches(Tag.SEMICOLON, ";");
         int assignmentLocation = pCodeGenerator.getIp();
-        location();
         assignment();
         pCodeGenerator.generateJump(conditionLocation);
         matches(Tag.R_PARENTHESIS, ")");
@@ -251,12 +254,17 @@ public class Parser {
     }
 
     private void assignment() {
-        Symbol s = getSymbol(lastToken.getLexeme());
+        location();
+        Symbol s = getSymbol(auxToken.getLexeme());
         if (!matches(Tag.EQUAL)) {
             printError("Error: Se esperaba operador de asignacion =");
         }
         expression();
-        pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+        if (s.getType() == SymbolTable.Type.ARRAY){
+            pCodeGenerator.generateAssignmentOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+        }else {
+            pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+        }
     }
 
     private void conditions() {
@@ -354,7 +362,7 @@ public class Parser {
         if (matches(Tag.INTEGER)) {
             pCodeGenerator.generateValue(((TokenValue<Integer>) lastToken).getValue());
         } else if (matches(Tag.DECIMAL)) {
-            pCodeGenerator.generateValue(((TokenValue<Double>) lastToken).getValue());
+            pCodeGenerator.generateValue(((TokenValue<  Double>) lastToken).getValue());
         } else if (matches(Tag.CHARACTER)) {
             pCodeGenerator.generateValue(((TokenValue<Character>) lastToken).getValue());
         } else if (matches(Tag.STRING)) {
@@ -362,8 +370,12 @@ public class Parser {
         } else if (matches(Tag.TRUE) || matches(Tag.FALSE)) {
             pCodeGenerator.generateValue(((TokenValue<Boolean>) lastToken).getValue());
         } else if (location()) {
-            Symbol s = symbolTables.peek().get(lastToken.getLexeme());
-            pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+            Symbol s = symbolTables.peek().get(auxToken.getLexeme());
+            if (s.getType() == SymbolTable.Type.ARRAY) {
+                pCodeGenerator.generateVariableOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+            }else{
+                pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+            }
         } else if (matches(Tag.L_PARENTHESIS)) {
             expression();
             matches(Tag.R_PARENTHESIS, ")");
@@ -377,10 +389,13 @@ public class Parser {
     private boolean location() {
         if (matches(Tag.IDENTIFIER)) {
             Symbol symbol = getSymbol(lastToken.getLexeme());
+            Token saveToken = lastToken;
+            auxToken = saveToken;
             if (symbol == null) {
                 printError("Error: No se ha declarado la variable " + lastToken.getLexeme());
             } else if (symbol.getType() == SymbolTable.Type.ARRAY) {
                 arrayOperator();
+                auxToken = saveToken;
                 return true;
             } else if (symbol.getType() != SymbolTable.Type.VARIABLE) {
                 printError("Error: Identificador " + lastToken.getLexeme() + " debe ser una variable");
@@ -429,7 +444,11 @@ public class Parser {
     }
 
     private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType){
-        symbolTables.peek().add(lexeme, type, dataType);
+        symbolTables.peek().add(lexeme, type, dataType, 1);
+    }
+
+    private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType, int offset){
+        symbolTables.peek().add(lexeme, type, dataType, offset);
     }
 
     private Symbol getSymbol(String lexeme){

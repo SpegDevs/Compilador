@@ -9,5 +9,7 @@ public enum PCode {
     INS,
     SAL,
     SAC,
-    SAI
+    SAI,
+    ALO,
+    CAO
 }

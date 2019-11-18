@@ -20,7 +20,7 @@ public class PCodeGenerator {
         ip++;
     }
 
-    public void generateINS(int n){
+    public void generateAllocate(int n){
         generate(new PInstruction(PCode.INS, 0, n));
     }
 
@@ -50,6 +50,14 @@ public class PCodeGenerator {
 
     public void generateVariable(int level, int address){
         generate(new PInstruction(PCode.CAR, level, address));
+    }
+
+    public void generateAssignmentOffset(int level, int address){
+        generate(new PInstruction(PCode.ALO, level, address));
+    }
+
+    public void generateVariableOffset(int level, int address){
+        generate(new PInstruction(PCode.CAO, level, address));
     }
 
     public void generateReturn(){
