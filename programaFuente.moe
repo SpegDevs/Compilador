@@ -1,13 +1,19 @@
 arr[int, 5] a;
-int i;
 int x;
 
-a[0] = 5;
-a[1] = 3;
-a[2] = -4;
-a[3] = 9;
-a[4] = 1;
-x = 1;
-for (i=0; i<5; i=i+1){
-    x = x*a[i];
+function suma(int n){
+    int r;
+    if (n == 0){
+        r = 0;
+    }ifnot{
+        r = a[n-1]+call(suma(n-1));
+    }
+    ret r;
 }
+
+a[0] = 2;
+a[1] = -5;
+a[2] = 7;
+a[3] = 4;
+a[4] = -4;
+x = call(suma(5));

@@ -60,8 +60,16 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.CAO, level, address));
     }
 
+    public void generateCall(int level, int address){
+        generate(new PInstruction(PCode.LLA, level, address));
+    }
+
+    public void generateParams(int count){
+        generate(new PInstruction(PCode.PAR, 0, count));
+    }
+
     public void generateReturn(){
-        generate(new PInstruction(PCode.OPR, 0, 0));
+        generate(new PInstruction(PCode.RET, 0, 0));
     }
 
     public void generateSum(){

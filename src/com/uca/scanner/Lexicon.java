@@ -32,7 +32,7 @@ public class Lexicon {
         reservedWordsTokens.put("ifnot", new Token(Tag.IFNOT));
         reservedWordsTokens.put("do", new Token(Tag.DO));
         reservedWordsTokens.put("for", new Token(Tag.FOR));
-        reservedWordsTokens.put("return", new Token(Tag.RETURN));
+        reservedWordsTokens.put("ret", new Token(Tag.RETURN));
         reservedWordsTokens.put("function", new Token(Tag.FUNCTION));
         reservedWordsTokens.put("call", new Token(Tag.CALL));
 

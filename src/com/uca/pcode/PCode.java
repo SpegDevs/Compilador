@@ -11,5 +11,7 @@ public enum PCode {
     SAC,
     SAI,
     ALO,
-    CAO
+    CAO,
+    PAR,
+    RET
 }

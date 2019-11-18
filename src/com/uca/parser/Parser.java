@@ -51,7 +51,6 @@ public class Parser {
         while (!scanner.isEndOfFile()) {
             statement();
         }
-        pCodeGenerator.generateReturn();
     }
 
     private void block() {
@@ -122,7 +121,7 @@ public class Parser {
         while (matches(Tag.FUNCTION)) {
             type();
             if (matches(Tag.IDENTIFIER)) {
-                addSymbol(lastToken.getLexeme(), SymbolTable.Type.FUNCTION, dataType);
+                addFunction(lastToken.getLexeme(), dataType, pCodeGenerator.getIp());
             }
             addSymbolTable();
             parameters();
@@ -132,37 +131,40 @@ public class Parser {
     }
 
     private void functionBlock() {
-        addSymbolTable();
         matches(Tag.L_BRACE, "{");
         declarations();
+        pCodeGenerator.generateAllocate(symbolTables.peek().getnVariables());
         while (!matches(Tag.RETURN)) {
             statement();
         }
         expression();
         matches(Tag.SEMICOLON, ";");
         matches(Tag.R_BRACE, "}");
-        removeSymbolTable();
+        pCodeGenerator.generateReturn();
     }
 
     private void functionCall() {
         matches(Tag.L_PARENTHESIS, "(");
-        if (is(Tag.IDENTIFIER)) {
-            Symbol symbol = getSymbol(lastToken.getLexeme());
-            if (symbol == null) {
-                printError("Error: No se ha declarado la funcion " + token.getLexeme());
-            } else if (symbol.getType() != SymbolTable.Type.FUNCTION) {
-                printError("Error: Identificador " + token.getLexeme() + " debe ser funcion");
+        if (matches(Tag.IDENTIFIER)) {
+            Symbol s = getSymbol(lastToken.getLexeme());
+            if (s == null) {
+                printError("Error: No se ha declarado la funcion " + lastToken.getLexeme());
+            } else if (s.getType() != SymbolTable.Type.FUNCTION) {
+                printError("Error: Identificador " + lastToken.getLexeme() + " debe ser funcion");
             }
-            getToken();
+            arguments();
+            matches(Tag.R_PARENTHESIS, ")");
+            pCodeGenerator.generateCall(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
         } else {
             printError("Error: Call debe ir seguido de un identificador");
         }
-        arguments();
-        matches(Tag.R_PARENTHESIS, ")");
     }
 
     private void parameters() {
         matches(Tag.L_PARENTHESIS, "(");
+        if (matches(Tag.R_PARENTHESIS)){
+            return;
+        }
         declaration();
         while (matches(Tag.COLON)) {
             declaration();
@@ -171,12 +173,19 @@ public class Parser {
     }
 
     private void arguments() {
+        int count=0;
         matches(Tag.L_PARENTHESIS, "(");
+        if (matches(Tag.R_PARENTHESIS)){
+            return;
+        }
         expression();
+        count++;
         while (matches(Tag.COLON)) {
             expression();
+            count++;
         }
         matches(Tag.R_PARENTHESIS, ")");
+        pCodeGenerator.generateParams(count);
     }
 
     private void ifBlock() {
@@ -449,6 +458,10 @@ public class Parser {
 
     private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType, int offset){
         symbolTables.peek().add(lexeme, type, dataType, offset);
+    }
+
+    private void addFunction(String lexeme, SymbolTable.DataType dataType, int address){
+        symbolTables.peek().addFunction(lexeme, dataType, address);
     }
 
     private Symbol getSymbol(String lexeme){
