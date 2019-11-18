@@ -24,8 +24,9 @@ public class SymbolTable {
         }
     }
 
-    public void addFunction(String id, DataType dataType, int address){
+    public Symbol addFunction(String id, DataType dataType, int address){
         table.put(id, new Symbol(id, Type.FUNCTION, dataType, level, address));
+        return table.get(id);
     }
 
     public void add(String id, Type type, DataType dataType, int offset) {

@@ -120,11 +120,15 @@ public class Parser {
     private void functions() {
         while (matches(Tag.FUNCTION)) {
             type();
+            Symbol s = null;
             if (matches(Tag.IDENTIFIER)) {
-                addFunction(lastToken.getLexeme(), dataType, pCodeGenerator.getIp());
+                s = addFunction(lastToken.getLexeme(), dataType, pCodeGenerator.getIp());
             }
             addSymbolTable();
-            parameters();
+            int params = parameters();
+            if (s != null) {
+                s.setParams(params);
+            }
             functionBlock();
             removeSymbolTable();
         }
@@ -152,31 +156,131 @@ public class Parser {
             } else if (s.getType() != SymbolTable.Type.FUNCTION) {
                 printError("Error: Identificador " + lastToken.getLexeme() + " debe ser funcion");
             }
-            arguments();
+            int args = arguments();
+            checkFunctionCall(s.getParams(),args);
+            pCodeGenerator.generateParams(args);
             matches(Tag.R_PARENTHESIS, ")");
             pCodeGenerator.generateCall(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+        } else if (builtInFunction()){
+            Token fun = lastToken;
+            int args = arguments();
+            matches(Tag.R_PARENTHESIS, ")");
+            switch (fun.getTag()){
+                case MAX:
+                    checkFunctionCall(2, args);
+                    pCodeGenerator.generateMax();
+                    break;
+                case MIN:
+                    checkFunctionCall(2, args);
+                    pCodeGenerator.generateMin();
+                    break;
+                case RANDOM:
+                    checkFunctionCall(2, args);
+                    pCodeGenerator.generateRandom();
+                    break;
+                case FACTORIAL:
+                    checkFunctionCall(1, args);
+                    pCodeGenerator.generateFactorial();
+                    break;
+                case POW:
+                    checkFunctionCall(2, args);
+                    pCodeGenerator.generatePow();
+                    break;
+                case SQRT:
+                    checkFunctionCall(1, args);
+                    pCodeGenerator.generateSqrt();
+                    break;
+                case CEIL:
+                    checkFunctionCall(1, args);
+                    pCodeGenerator.generateCeil();
+                    break;
+                case FLOOR:
+                    checkFunctionCall(1, args);
+                    pCodeGenerator.generateFloor();
+                    break;
+                case ROUND:
+                    checkFunctionCall(1, args);
+                    pCodeGenerator.generateRound();
+                    break;
+                case SUBSTRING:
+                    checkFunctionCall(3, args);
+                    pCodeGenerator.generateSubstring();
+                    break;
+                case OUT:
+                    checkFunctionCall(1,args);
+                    pCodeGenerator.generateOut();
+                    break;
+                case IN_INT:
+                    checkFunctionCall(0,args);
+                    pCodeGenerator.generateIn(0);
+                    break;
+                case IN_DEC:
+                    checkFunctionCall(0,args);
+                    pCodeGenerator.generateIn(1);
+                    break;
+                case IN_CHA:
+                    checkFunctionCall(0,args);
+                    pCodeGenerator.generateIn(2);
+                    break;
+                case IN_STR:
+                    checkFunctionCall(0,args);
+                    pCodeGenerator.generateIn(3);
+                    break;
+                case IN_BOO:
+                    checkFunctionCall(0,args);
+                    pCodeGenerator.generateIn(4);
+                    break;
+                case FILE_WRITE:
+                    checkFunctionCall(2,args);
+                    pCodeGenerator.generateFileWrite();
+                    break;
+                case FILE_READ_INT:
+                    checkFunctionCall(1,args);
+                    pCodeGenerator.generateFileRead(0);
+                    break;
+                case FILE_READ_DEC:
+                    checkFunctionCall(1,args);
+                    pCodeGenerator.generateFileRead(1);
+                    break;
+                case FILE_READ_CHA:
+                    checkFunctionCall(1,args);
+                    pCodeGenerator.generateFileRead(2);
+                    break;
+                case FILE_READ_STR:
+                    checkFunctionCall(1,args);
+                    pCodeGenerator.generateFileRead(3);
+                    break;
+                case FILE_READ_BOO:
+                    checkFunctionCall(1,args);
+                    pCodeGenerator.generateFileRead(4);
+                    break;
+            }
         } else {
             printError("Error: Call debe ir seguido de un identificador");
         }
     }
 
-    private void parameters() {
-        matches(Tag.L_PARENTHESIS, "(");
-        if (matches(Tag.R_PARENTHESIS)){
-            return;
-        }
-        declaration();
-        while (matches(Tag.COLON)) {
-            declaration();
-        }
-        matches(Tag.R_PARENTHESIS, ")");
-    }
-
-    private void arguments() {
+    private int parameters() {
         int count=0;
         matches(Tag.L_PARENTHESIS, "(");
         if (matches(Tag.R_PARENTHESIS)){
-            return;
+            return 0;
+        }
+        declaration();
+        count++;
+        while (matches(Tag.COLON)) {
+            declaration();
+            count++;
+        }
+        matches(Tag.R_PARENTHESIS, ")");
+        return count;
+    }
+
+    private int arguments() {
+        int count=0;
+        matches(Tag.L_PARENTHESIS, "(");
+        if (matches(Tag.R_PARENTHESIS)){
+            return 0;
         }
         expression();
         count++;
@@ -185,7 +289,29 @@ public class Parser {
             count++;
         }
         matches(Tag.R_PARENTHESIS, ")");
-        pCodeGenerator.generateParams(count);
+        return count;
+    }
+
+    private void checkFunctionCall(int params, int args){
+        if (args < params){
+            printError("Error: Faltan argumentos, se esperaban "+params);
+        }
+        if (args > params){
+            printError("Error: Demasiados argumentos, se esperaban "+params);
+        }
+    }
+
+    private boolean builtInFunction(){
+        if (matches(Tag.MAX) || matches(Tag.MIN) || matches(Tag.RANDOM) || matches(Tag.FACTORIAL) || matches(Tag.POW) || matches(Tag.SQRT) || matches(Tag.FLOOR) || matches(Tag.CEIL) || matches(Tag.ROUND) || matches(Tag.SUBSTRING)){
+            return true;
+        }
+        if (matches(Tag.OUT) || matches(Tag.IN_INT) || matches(Tag.IN_DEC) || matches(Tag.IN_CHA) || matches(Tag.IN_STR) || matches(Tag.IN_BOO)){
+            return true;
+        }
+        if (matches(Tag.FILE_OPEN) || matches(Tag.FILE_WRITE) || matches(Tag.FILE_READ_INT) || matches(Tag.FILE_READ_DEC) || matches(Tag.FILE_READ_CHA) || matches(Tag.FILE_READ_STR) || matches(Tag.FILE_READ_BOO)){
+            return true;
+        }
+        return false;
     }
 
     private void ifBlock() {
@@ -258,7 +384,7 @@ public class Parser {
             functionCall();
             matches(Tag.SEMICOLON, ";");
         } else {
-            printError("Error: No es instruccion " + token.getLexeme() + ".");
+            printError("Error: No es instruccion " + token.getLexeme());
         }
     }
 
@@ -460,8 +586,8 @@ public class Parser {
         symbolTables.peek().add(lexeme, type, dataType, offset);
     }
 
-    private void addFunction(String lexeme, SymbolTable.DataType dataType, int address){
-        symbolTables.peek().addFunction(lexeme, dataType, address);
+    private Symbol addFunction(String lexeme, SymbolTable.DataType dataType, int address){
+        return symbolTables.peek().addFunction(lexeme, dataType, address);
     }
 
     private Symbol getSymbol(String lexeme){

@@ -24,10 +24,7 @@ public class Lexicon {
         reservedWordsTokens.put("boo", new Token(Tag.BOO));
         reservedWordsTokens.put("arr", new Token(Tag.ARRAY));
 
-        reservedWordsTokens.put("in", new Token(Tag.IN));
-        reservedWordsTokens.put("out", new Token(Tag.OUT));
         reservedWordsTokens.put("if", new Token(Tag.IF));
-        reservedWordsTokens.put("else", new Token(Tag.ELSE));
         reservedWordsTokens.put("while", new Token(Tag.WHILE));
         reservedWordsTokens.put("ifnot", new Token(Tag.IFNOT));
         reservedWordsTokens.put("do", new Token(Tag.DO));
@@ -39,16 +36,23 @@ public class Lexicon {
         reservedWordsTokens.put("true", new TokenValue<Boolean>(Tag.TRUE, true));
         reservedWordsTokens.put("false", new TokenValue<Boolean>(Tag.FALSE, false));
 
-        reservedWordsTokens.put("Length", new Token(Tag.LENGTH));
-        reservedWordsTokens.put("Pal", new Token(Tag.PALINDROME));
-        reservedWordsTokens.put("Noc", new Token(Tag.CONCURRENCIA));
-        reservedWordsTokens.put("MayorA", new Token(Tag.MAYORA));
-        reservedWordsTokens.put("MenorA", new Token(Tag.MENORA));
-        reservedWordsTokens.put("RandomI", new Token(Tag.RANDOM));
+        reservedWordsTokens.put("Max", new Token(Tag.MAX));
+        reservedWordsTokens.put("Min", new Token(Tag.MIN));
+        reservedWordsTokens.put("Random", new Token(Tag.RANDOM));
         reservedWordsTokens.put("Factorial", new Token(Tag.FACTORIAL));
         reservedWordsTokens.put("Pow", new Token(Tag.POW));
+        reservedWordsTokens.put("Sqrt", new Token(Tag.SQRT));
         reservedWordsTokens.put("Ceil", new Token(Tag.CEIL));
         reservedWordsTokens.put("Floor", new Token(Tag.FLOOR));
+        reservedWordsTokens.put("Round", new Token(Tag.ROUND));
+        reservedWordsTokens.put("Substring", new Token(Tag.SUBSTRING));
+
+        reservedWordsTokens.put("out", new Token(Tag.OUT));
+        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
+        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
+        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
+        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
+        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
     }
 
     private static void initializeSpecialSymbols(){

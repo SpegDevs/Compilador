@@ -7,6 +7,7 @@ public class Symbol {
     private SymbolTable.DataType dataType;
     private int level;
     private int address;
+    private int params;
 
     public Symbol(String name, SymbolTable.Type type, SymbolTable.DataType dataType, int level, int address) {
         this.name = name;
@@ -54,5 +55,13 @@ public class Symbol {
 
     public void setDataType(SymbolTable.DataType dataType) {
         this.dataType = dataType;
+    }
+
+    public int getParams() {
+        return params;
+    }
+
+    public void setParams(int params) {
+        this.params = params;
     }
 }

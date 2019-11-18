@@ -72,6 +72,14 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.RET, 0, 0));
     }
 
+    public void generateOut(){
+        generate(new PInstruction(PCode.OPR, 0, 1));
+    }
+
+    public void generateIn(int type){
+        generate(new PInstruction(PCode.OPR, type, 2));
+    }
+
     public void generateSum(){
         generate(new PInstruction(PCode.OPR, 0, 3));
     }
@@ -130,6 +138,54 @@ public class PCodeGenerator {
 
     public void generateNegative(){
         generate(new PInstruction(PCode.OPR, 0, 17));
+    }
+
+    public void generateMax(){
+        generate(new PInstruction(PCode.OPR, 0, 18));
+    }
+
+    public void generateMin(){
+        generate(new PInstruction(PCode.OPR, 0, 19));
+    }
+
+    public void generateRandom(){
+        generate(new PInstruction(PCode.OPR, 0, 20));
+    }
+
+    public void generateFactorial(){
+        generate(new PInstruction(PCode.OPR, 0, 21));
+    }
+
+    public void generatePow(){
+        generate(new PInstruction(PCode.OPR, 0, 22));
+    }
+
+    public void generateSqrt(){
+        generate(new PInstruction(PCode.OPR, 0, 23));
+    }
+
+    public void generateCeil(){
+        generate(new PInstruction(PCode.OPR, 0, 24));
+    }
+
+    public void generateFloor(){
+        generate(new PInstruction(PCode.OPR, 0, 25));
+    }
+
+    public void generateRound(){
+        generate(new PInstruction(PCode.OPR, 0, 26));
+    }
+
+    public void generateSubstring(){
+        generate(new PInstruction(PCode.OPR, 0, 27));
+    }
+
+    public void generateFileWrite(){
+        generate(new PInstruction(PCode.OPR, 0, 28));
+    }
+
+    public void generateFileRead(int type){
+        generate(new PInstruction(PCode.OPR, type, 29));
     }
 
     public int generateConditionalJump(){

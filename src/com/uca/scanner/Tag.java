@@ -16,8 +16,6 @@ public enum Tag {
     IDENTIFIER,
 
     //Palabras Reservadas
-    IN,
-    OUT,
     IF,
     ELSE,
     IFNOT,
@@ -34,16 +32,31 @@ public enum Tag {
     CALL,
 
    //Funciones Predefinidas
-    LENGTH,
-    PALINDROME,
-    CONCURRENCIA,
-    MAYORA,
-    MENORA,
+    MAX,
+    MIN,
     RANDOM,
     FACTORIAL,
     POW,
+    SQRT,
     CEIL,
     FLOOR,
+    ROUND,
+    SUBSTRING,
+
+    //Entrada/Salida
+    OUT,
+    IN_INT,
+    IN_DEC,
+    IN_CHA,
+    IN_STR,
+    IN_BOO,
+    FILE_OPEN,
+    FILE_WRITE,
+    FILE_READ_INT,
+    FILE_READ_DEC,
+    FILE_READ_CHA,
+    FILE_READ_STR,
+    FILE_READ_BOO,
 
     //Caracteres Especiales
     EQUAL,

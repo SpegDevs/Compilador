@@ -1,5 +1,6 @@
 arr[int, 5] a;
 int x;
+int i;
 
 function suma(int n){
     int r;
@@ -11,9 +12,10 @@ function suma(int n){
     ret r;
 }
 
-a[0] = 2;
-a[1] = -5;
-a[2] = 7;
-a[3] = 4;
-a[4] = -4;
+i=0;
+while (i<5){
+    a[i] = i+1;
+    i = i+1;
+}
 x = call(suma(5));
+call(out(x));
