@@ -104,6 +104,18 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.OPR, 0, 14));
     }
 
+    public void generateNot(){
+        generate(new PInstruction(PCode.OPR, 0, 15));
+    }
+
+    public void generatePositive(){
+        generate(new PInstruction(PCode.OPR, 0, 16));
+    }
+
+    public void generateNegative(){
+        generate(new PInstruction(PCode.OPR, 0, 17));
+    }
+
     public int generateConditionalJump(){
         generate(new PInstruction(PCode.SAC, 0, 0));
         return ip;

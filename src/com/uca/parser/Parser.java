@@ -51,30 +51,24 @@ public class Parser {
     }
 
     private void block() {
-        //addSymbolTable();
         matches(Tag.L_BRACE, "{");
         while (!matches(Tag.R_BRACE)) {
             statement();
         }
-        //removeSymbolTable();
     }
 
     private void declarations() {
         while (type()) {
             declaration();
-            while (matches(Tag.COLON)) {
-                declaration();
-            }
             matches(Tag.SEMICOLON, ";");
         }
     }
 
     private void declaration() {
-        if (!is(Tag.IDENTIFIER)) {
-            printError("Error: Debe ser identificador " + token.getLexeme());
+        if (!matches(Tag.IDENTIFIER)) {
+            printError("Error: Debe ser identificador " + lastToken.getLexeme());
         }
-        symbolTables.peek().add(token.getLexeme(), type, dataType);
-        getToken();
+        addSymbol(lastToken.getLexeme(), type, dataType);
     }
 
     private boolean type() {
@@ -83,13 +77,14 @@ public class Parser {
             return true;
         } else if (matches(Tag.ARRAY)) {
             matches(Tag.L_BRACKET, "[");
+            if (!basicType()) {
+                printError("Error: Se esperaba un tipo de dato");
+            }
+            matches(Tag.COLON, ",");
             if (!matches(Tag.INTEGER)) {
                 printError("Error: Debe ser entero");
             }
             matches(Tag.R_BRACKET, "]");
-            if (!basicType()) {
-                printError("Error: Se esperaba un tipo de dato");
-            }
             this.type = SymbolTable.Type.ARRAY;
             return true;
         }
@@ -120,7 +115,7 @@ public class Parser {
         while (matches(Tag.FUNCTION)) {
             type();
             if (matches(Tag.IDENTIFIER)) {
-                symbolTables.peek().add(lastToken.getLexeme(), SymbolTable.Type.FUNCTION, dataType);
+                addSymbol(lastToken.getLexeme(), SymbolTable.Type.FUNCTION, dataType);
             }
             addSymbolTable();
             parameters();
@@ -145,7 +140,7 @@ public class Parser {
     private void functionCall() {
         matches(Tag.L_PARENTHESIS, "(");
         if (is(Tag.IDENTIFIER)) {
-            Symbol symbol = symbolTables.peek().get(token.getLexeme());
+            Symbol symbol = getSymbol(lastToken.getLexeme());
             if (symbol == null) {
                 printError("Error: No se ha declarado la funcion " + token.getLexeme());
             } else if (symbol.getType() != SymbolTable.Type.FUNCTION) {
@@ -256,7 +251,7 @@ public class Parser {
     }
 
     private void assignment() {
-        Symbol s = symbolTables.peek().get(lastToken.getLexeme());
+        Symbol s = getSymbol(lastToken.getLexeme());
         if (!matches(Tag.EQUAL)) {
             printError("Error: Se esperaba operador de asignacion =");
         }
@@ -326,6 +321,10 @@ public class Parser {
     }
 
     private void term() {
+        Token unary = null;
+        if (matches(Tag.MINUS) || matches(Tag.PLUS) || matches(Tag.NOT)){
+            unary = lastToken;
+        }
         factor();
         while (matches(Tag.MULTIPLICATION) || matches(Tag.DIVISION)) {
             Token op = lastToken;
@@ -334,6 +333,19 @@ public class Parser {
                 pCodeGenerator.generateMultiplication();
             } else {
                 pCodeGenerator.generateDivision();
+            }
+        }
+        if (unary != null){
+            switch (unary.getTag()){
+                case MINUS:
+                    pCodeGenerator.generateNegative();
+                    break;
+                case PLUS:
+                    pCodeGenerator.generatePositive();
+                    break;
+                case NOT:
+                    pCodeGenerator.generateNot();
+                    break;
             }
         }
     }
@@ -364,7 +376,7 @@ public class Parser {
 
     private boolean location() {
         if (matches(Tag.IDENTIFIER)) {
-            Symbol symbol = symbolTables.peek().get(lastToken.getLexeme());
+            Symbol symbol = getSymbol(lastToken.getLexeme());
             if (symbol == null) {
                 printError("Error: No se ha declarado la variable " + lastToken.getLexeme());
             } else if (symbol.getType() == SymbolTable.Type.ARRAY) {
@@ -414,6 +426,14 @@ public class Parser {
         if (token == null) {
             token = new Token(Tag.NULL);
         }
+    }
+
+    private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType){
+        symbolTables.peek().add(lexeme, type, dataType);
+    }
+
+    private Symbol getSymbol(String lexeme){
+        return symbolTables.peek().get(lexeme);
     }
 
     private void addSymbolTable() {
