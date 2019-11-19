@@ -9,7 +9,7 @@ public class SymbolTable {
     }
 
     public enum DataType {
-        INTEGER, DECIMAL, BOOLEAN, STRING, CHARACTER
+        INTEGER, DECIMAL, BOOLEAN, STRING, CHARACTER, VOID
     }
 
     private HashMap<String, Symbol> table = new HashMap<>();

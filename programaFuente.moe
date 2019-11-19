@@ -1,8 +1,9 @@
 arr[int, 5] a;
 int x;
 int i;
+str s;
 
-function suma(int n){
+function int suma(int n){
     int r;
     if (n == 0){
         r = 0;

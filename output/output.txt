@@ -12,7 +12,11 @@ x -> IDENTIFIER
 int -> INT
 i -> IDENTIFIER
 ; -> SEMICOLON
+str -> STR
+s -> IDENTIFIER
+; -> SEMICOLON
 function -> FUNCTION
+int -> INT
 suma -> IDENTIFIER
 ( -> L_PARENTHESIS
 int -> INT

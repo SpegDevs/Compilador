@@ -67,7 +67,7 @@ public class Parser {
         }
     }
 
-    private void declaration(){
+    private void declaration() {
         type();
         if (!matches(Tag.IDENTIFIER)) {
             printError("Error: Debe ser identificador " + lastToken.getLexeme());
@@ -89,7 +89,7 @@ public class Parser {
             if (!matches(Tag.INTEGER)) {
                 printError("Error: Debe ser entero");
             }
-            this.offset = ((TokenValue<Integer>)lastToken).getValue();
+            this.offset = ((TokenValue<Integer>) lastToken).getValue();
             matches(Tag.R_BRACKET, "]");
             this.type = SymbolTable.Type.ARRAY;
             return true;
@@ -119,7 +119,9 @@ public class Parser {
 
     private void functions() {
         while (matches(Tag.FUNCTION)) {
-            type();
+            if (!type()){
+                printError("Error: Se esperaba un tipo de dato");
+            }
             Symbol s = null;
             if (matches(Tag.IDENTIFIER)) {
                 s = addFunction(lastToken.getLexeme(), dataType, pCodeGenerator.getIp());
@@ -147,7 +149,8 @@ public class Parser {
         pCodeGenerator.generateReturn();
     }
 
-    private void functionCall() {
+    private SymbolTable.DataType functionCall() {
+        SymbolTable.DataType type = SymbolTable.DataType.VOID;
         matches(Tag.L_PARENTHESIS, "(");
         if (matches(Tag.IDENTIFIER)) {
             Symbol s = getSymbol(lastToken.getLexeme());
@@ -157,113 +160,137 @@ public class Parser {
                 printError("Error: Identificador " + lastToken.getLexeme() + " debe ser funcion");
             }
             int args = arguments();
-            checkFunctionCall(s.getParams(),args);
+            checkFunctionCall(s.getParams(), args);
             pCodeGenerator.generateParams(args);
             matches(Tag.R_PARENTHESIS, ")");
             pCodeGenerator.generateCall(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-        } else if (builtInFunction()){
+            type = s.getDataType();
+        } else if (builtInFunction()) {
             Token fun = lastToken;
             int args = arguments();
             matches(Tag.R_PARENTHESIS, ")");
-            switch (fun.getTag()){
+            switch (fun.getTag()) {
                 case MAX:
                     checkFunctionCall(2, args);
                     pCodeGenerator.generateMax();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case MIN:
                     checkFunctionCall(2, args);
                     pCodeGenerator.generateMin();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case RANDOM:
                     checkFunctionCall(2, args);
                     pCodeGenerator.generateRandom();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case FACTORIAL:
                     checkFunctionCall(1, args);
                     pCodeGenerator.generateFactorial();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case POW:
                     checkFunctionCall(2, args);
                     pCodeGenerator.generatePow();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case SQRT:
                     checkFunctionCall(1, args);
                     pCodeGenerator.generateSqrt();
+                    type = SymbolTable.DataType.DECIMAL;
                     break;
                 case CEIL:
                     checkFunctionCall(1, args);
                     pCodeGenerator.generateCeil();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case FLOOR:
                     checkFunctionCall(1, args);
                     pCodeGenerator.generateFloor();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case ROUND:
                     checkFunctionCall(1, args);
                     pCodeGenerator.generateRound();
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case SUBSTRING:
                     checkFunctionCall(3, args);
                     pCodeGenerator.generateSubstring();
+                    type = SymbolTable.DataType.STRING;
                     break;
                 case OUT:
-                    checkFunctionCall(1,args);
+                    checkFunctionCall(1, args);
                     pCodeGenerator.generateOut();
+                    type = SymbolTable.DataType.VOID;
                     break;
                 case IN_INT:
-                    checkFunctionCall(0,args);
+                    checkFunctionCall(0, args);
                     pCodeGenerator.generateIn(0);
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case IN_DEC:
-                    checkFunctionCall(0,args);
+                    checkFunctionCall(0, args);
                     pCodeGenerator.generateIn(1);
+                    type = SymbolTable.DataType.DECIMAL;
                     break;
                 case IN_CHA:
-                    checkFunctionCall(0,args);
+                    checkFunctionCall(0, args);
                     pCodeGenerator.generateIn(2);
+                    type = SymbolTable.DataType.CHARACTER;
                     break;
                 case IN_STR:
-                    checkFunctionCall(0,args);
+                    checkFunctionCall(0, args);
                     pCodeGenerator.generateIn(3);
+                    type = SymbolTable.DataType.STRING;
                     break;
                 case IN_BOO:
-                    checkFunctionCall(0,args);
+                    checkFunctionCall(0, args);
                     pCodeGenerator.generateIn(4);
+                    type = SymbolTable.DataType.BOOLEAN;
                     break;
                 case FILE_WRITE:
-                    checkFunctionCall(2,args);
+                    checkFunctionCall(2, args);
                     pCodeGenerator.generateFileWrite();
+                    type = SymbolTable.DataType.VOID;
                     break;
                 case FILE_READ_INT:
-                    checkFunctionCall(1,args);
+                    checkFunctionCall(1, args);
                     pCodeGenerator.generateFileRead(0);
+                    type = SymbolTable.DataType.INTEGER;
                     break;
                 case FILE_READ_DEC:
-                    checkFunctionCall(1,args);
+                    checkFunctionCall(1, args);
                     pCodeGenerator.generateFileRead(1);
+                    type = SymbolTable.DataType.DECIMAL;
                     break;
                 case FILE_READ_CHA:
-                    checkFunctionCall(1,args);
+                    checkFunctionCall(1, args);
                     pCodeGenerator.generateFileRead(2);
+                    type = SymbolTable.DataType.CHARACTER;
                     break;
                 case FILE_READ_STR:
-                    checkFunctionCall(1,args);
+                    checkFunctionCall(1, args);
                     pCodeGenerator.generateFileRead(3);
+                    type = SymbolTable.DataType.STRING;
                     break;
                 case FILE_READ_BOO:
-                    checkFunctionCall(1,args);
+                    checkFunctionCall(1, args);
                     pCodeGenerator.generateFileRead(4);
+                    type = SymbolTable.DataType.BOOLEAN;
                     break;
             }
         } else {
             printError("Error: Call debe ir seguido de un identificador");
         }
+        return type;
     }
 
     private int parameters() {
-        int count=0;
+        int count = 0;
         matches(Tag.L_PARENTHESIS, "(");
-        if (matches(Tag.R_PARENTHESIS)){
+        if (matches(Tag.R_PARENTHESIS)) {
             return 0;
         }
         declaration();
@@ -277,9 +304,9 @@ public class Parser {
     }
 
     private int arguments() {
-        int count=0;
+        int count = 0;
         matches(Tag.L_PARENTHESIS, "(");
-        if (matches(Tag.R_PARENTHESIS)){
+        if (matches(Tag.R_PARENTHESIS)) {
             return 0;
         }
         expression();
@@ -292,23 +319,14 @@ public class Parser {
         return count;
     }
 
-    private void checkFunctionCall(int params, int args){
-        if (args < params){
-            printError("Error: Faltan argumentos, se esperaban "+params);
-        }
-        if (args > params){
-            printError("Error: Demasiados argumentos, se esperaban "+params);
-        }
-    }
-
-    private boolean builtInFunction(){
-        if (matches(Tag.MAX) || matches(Tag.MIN) || matches(Tag.RANDOM) || matches(Tag.FACTORIAL) || matches(Tag.POW) || matches(Tag.SQRT) || matches(Tag.FLOOR) || matches(Tag.CEIL) || matches(Tag.ROUND) || matches(Tag.SUBSTRING)){
+    private boolean builtInFunction() {
+        if (matches(Tag.MAX) || matches(Tag.MIN) || matches(Tag.RANDOM) || matches(Tag.FACTORIAL) || matches(Tag.POW) || matches(Tag.SQRT) || matches(Tag.FLOOR) || matches(Tag.CEIL) || matches(Tag.ROUND) || matches(Tag.SUBSTRING)) {
             return true;
         }
-        if (matches(Tag.OUT) || matches(Tag.IN_INT) || matches(Tag.IN_DEC) || matches(Tag.IN_CHA) || matches(Tag.IN_STR) || matches(Tag.IN_BOO)){
+        if (matches(Tag.OUT) || matches(Tag.IN_INT) || matches(Tag.IN_DEC) || matches(Tag.IN_CHA) || matches(Tag.IN_STR) || matches(Tag.IN_BOO)) {
             return true;
         }
-        if (matches(Tag.FILE_OPEN) || matches(Tag.FILE_WRITE) || matches(Tag.FILE_READ_INT) || matches(Tag.FILE_READ_DEC) || matches(Tag.FILE_READ_CHA) || matches(Tag.FILE_READ_STR) || matches(Tag.FILE_READ_BOO)){
+        if (matches(Tag.FILE_OPEN) || matches(Tag.FILE_WRITE) || matches(Tag.FILE_READ_INT) || matches(Tag.FILE_READ_DEC) || matches(Tag.FILE_READ_CHA) || matches(Tag.FILE_READ_STR) || matches(Tag.FILE_READ_BOO)) {
             return true;
         }
         return false;
@@ -394,10 +412,15 @@ public class Parser {
         if (!matches(Tag.EQUAL)) {
             printError("Error: Se esperaba operador de asignacion =");
         }
-        expression();
-        if (s.getType() == SymbolTable.Type.ARRAY){
+        SymbolTable.DataType type = expression();
+        if (type != s.getDataType()) {
+            if (!attemptTypeConversion(s.getDataType(), type)) {
+                printError("Error: Se esperaba un valor de tipo " + s.getDataType().toString() + ", se enconto " + type.toString());
+            }
+        }
+        if (s.getType() == SymbolTable.Type.ARRAY) {
             pCodeGenerator.generateAssignmentOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-        }else {
+        } else {
             pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
         }
     }
@@ -415,12 +438,17 @@ public class Parser {
         }
     }
 
-    private void condition() {
-        expression();
+    private SymbolTable.DataType condition() {
+        SymbolTable.DataType type1 = expression();
         relational();
         Token op = lastToken;
-        expression();
-        switch (op.getTag()){
+        SymbolTable.DataType type2 = expression();
+        if (type1 != type2) {
+            if (!attemptTypeConversion(type1, type2)) {
+                printError("Error: Operador " + op.getTag() + " esperaba valores del mismo tipo " + type1.toString());
+            }
+        }
+        switch (op.getTag()) {
             case EQUAL_EQUAL:
                 pCodeGenerator.generateEqual();
                 break;
@@ -440,85 +468,150 @@ public class Parser {
                 pCodeGenerator.generateGreaterThanEqual();
                 break;
         }
+        return SymbolTable.DataType.BOOLEAN;
     }
 
     private void relational() {
         if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL)) {
 
-        } else{
+        } else {
             printError("Error: " + token.getLexeme() + " no es operador relacional");
         }
     }
 
-    private void expression() {
-        term();
+    private SymbolTable.DataType expression() {
+        SymbolTable.DataType type = SymbolTable.DataType.VOID;
+        SymbolTable.DataType type2 = SymbolTable.DataType.VOID;
+        type = term();
         while (matches(Tag.PLUS) || matches(Tag.MINUS)) {
             Token op = lastToken;
-            term();
+            type2 = term();
             if (op.getTag() == Tag.PLUS) {
+                if (type != SymbolTable.DataType.INTEGER && type != SymbolTable.DataType.DECIMAL && type != SymbolTable.DataType.STRING) {
+                    printError("Error: Operador " + op.getLexeme() + " no se puede aplicar a " + type.toString());
+                }
+                if (type2 != SymbolTable.DataType.INTEGER && type2 != SymbolTable.DataType.DECIMAL && type2 != SymbolTable.DataType.STRING) {
+                    printError("Error: Operador " + op.getLexeme() + " no se puede aplicar a " + type2.toString());
+                }
+                if (type == SymbolTable.DataType.STRING || type2 == SymbolTable.DataType.STRING) {
+                    type = SymbolTable.DataType.STRING;
+                } else if (type == SymbolTable.DataType.DECIMAL || type2 == SymbolTable.DataType.DECIMAL) {
+                    type = SymbolTable.DataType.DECIMAL;
+                } else {
+                    type = SymbolTable.DataType.INTEGER;
+                }
                 pCodeGenerator.generateSum();
             } else {
+                if (type != SymbolTable.DataType.INTEGER && type != SymbolTable.DataType.DECIMAL) {
+                    printError("Error: Operador " + op.getLexeme() + " no se puede aplicar a " + type.toString());
+                }
+                if (type2 != SymbolTable.DataType.INTEGER && type2 != SymbolTable.DataType.DECIMAL) {
+                    printError("Error: Operador " + op.getLexeme() + " no se puede aplicar a " + type2.toString());
+                }
+                if (type == SymbolTable.DataType.DECIMAL || type2 == SymbolTable.DataType.DECIMAL) {
+                    type = SymbolTable.DataType.DECIMAL;
+                } else {
+                    type = SymbolTable.DataType.INTEGER;
+                }
                 pCodeGenerator.generateSubtract();
             }
         }
+        return type;
     }
 
-    private void term() {
-        Token unary = null;
-        if (matches(Tag.MINUS) || matches(Tag.PLUS) || matches(Tag.NOT)){
-            unary = lastToken;
-        }
-        factor();
+    private SymbolTable.DataType term() {
+        SymbolTable.DataType type = SymbolTable.DataType.VOID;
+        SymbolTable.DataType type2 = SymbolTable.DataType.VOID;
+        type = unary();
         while (matches(Tag.MULTIPLICATION) || matches(Tag.DIVISION)) {
             Token op = lastToken;
-            factor();
+            type2 = unary();
             if (op.getTag() == Tag.MULTIPLICATION) {
                 pCodeGenerator.generateMultiplication();
             } else {
                 pCodeGenerator.generateDivision();
             }
+            if (type != SymbolTable.DataType.INTEGER && type != SymbolTable.DataType.DECIMAL) {
+                printError("Error: Operador " + op.getLexeme() + " no se puede aplicar a " + type.toString());
+            }
+            if (type2 != SymbolTable.DataType.INTEGER && type2 != SymbolTable.DataType.DECIMAL) {
+                printError("Error: Operador " + op.getLexeme() + " no se puede aplicar a " + type2.toString());
+            }
+            if (type == SymbolTable.DataType.DECIMAL || type2 == SymbolTable.DataType.DECIMAL) {
+                type = SymbolTable.DataType.DECIMAL;
+            } else {
+                type = SymbolTable.DataType.INTEGER;
+            }
         }
-        if (unary != null){
-            switch (unary.getTag()){
+        return type;
+    }
+
+    private SymbolTable.DataType unary() {
+        SymbolTable.DataType type = SymbolTable.DataType.VOID;
+        Token op = null;
+        if (matches(Tag.MINUS) || matches(Tag.PLUS) || matches(Tag.NOT)) {
+            op = lastToken;
+        }
+        type = factor();
+        if (op != null) {
+            switch (op.getTag()) {
                 case MINUS:
+                    if (type != SymbolTable.DataType.INTEGER && type != SymbolTable.DataType.DECIMAL) {
+                        printError("Error: Operador unario - no compatible con tipo " + type.toString());
+                    }
                     pCodeGenerator.generateNegative();
                     break;
                 case PLUS:
+                    if (type != SymbolTable.DataType.INTEGER && type != SymbolTable.DataType.DECIMAL) {
+                        printError("Error: Operador unario + no compatible con tipo " + type.toString());
+                    }
                     pCodeGenerator.generatePositive();
                     break;
                 case NOT:
+                    if (type != SymbolTable.DataType.BOOLEAN) {
+                        printError("Error: Operador unario ! no compatible con tipo " + type.toString());
+                    }
                     pCodeGenerator.generateNot();
                     break;
             }
         }
+        return type;
     }
 
-    private void factor() {
+    private SymbolTable.DataType factor() {
+        SymbolTable.DataType type = SymbolTable.DataType.VOID;
         if (matches(Tag.INTEGER)) {
             pCodeGenerator.generateValue(((TokenValue<Integer>) lastToken).getValue());
+            type = SymbolTable.DataType.INTEGER;
         } else if (matches(Tag.DECIMAL)) {
-            pCodeGenerator.generateValue(((TokenValue<  Double>) lastToken).getValue());
+            pCodeGenerator.generateValue(((TokenValue<Double>) lastToken).getValue());
+            type = SymbolTable.DataType.DECIMAL;
         } else if (matches(Tag.CHARACTER)) {
             pCodeGenerator.generateValue(((TokenValue<Character>) lastToken).getValue());
+            type = SymbolTable.DataType.CHARACTER;
         } else if (matches(Tag.STRING)) {
             pCodeGenerator.generateValue(((TokenValue<String>) lastToken).getValue());
+            type = SymbolTable.DataType.STRING;
         } else if (matches(Tag.TRUE) || matches(Tag.FALSE)) {
             pCodeGenerator.generateValue(((TokenValue<Boolean>) lastToken).getValue());
+            type = SymbolTable.DataType.BOOLEAN;
         } else if (location()) {
             Symbol s = symbolTables.peek().get(auxToken.getLexeme());
             if (s.getType() == SymbolTable.Type.ARRAY) {
                 pCodeGenerator.generateVariableOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-            }else{
+            } else {
                 pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
             }
+            type = s.getDataType();
         } else if (matches(Tag.L_PARENTHESIS)) {
-            expression();
+            type = expression();
             matches(Tag.R_PARENTHESIS, ")");
         } else if (matches(Tag.CALL)) {
-            functionCall();
+            type = functionCall();
         } else {
             printError("Error: " + token.getLexeme() + " no es factor");
         }
+        return type;
     }
 
     private boolean location() {
@@ -578,19 +671,19 @@ public class Parser {
         }
     }
 
-    private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType){
+    private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType) {
         symbolTables.peek().add(lexeme, type, dataType, 1);
     }
 
-    private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType, int offset){
+    private void addSymbol(String lexeme, SymbolTable.Type type, SymbolTable.DataType dataType, int offset) {
         symbolTables.peek().add(lexeme, type, dataType, offset);
     }
 
-    private Symbol addFunction(String lexeme, SymbolTable.DataType dataType, int address){
+    private Symbol addFunction(String lexeme, SymbolTable.DataType dataType, int address) {
         return symbolTables.peek().addFunction(lexeme, dataType, address);
     }
 
-    private Symbol getSymbol(String lexeme){
+    private Symbol getSymbol(String lexeme) {
         return symbolTables.peek().get(lexeme);
     }
 
@@ -600,6 +693,44 @@ public class Parser {
 
     private void removeSymbolTable() {
         symbolTables.pop();
+    }
+
+
+    private void checkFunctionCall(int params, int args) {
+        if (args < params) {
+            printError("Error: Faltan argumentos, se esperaban " + params);
+        }
+        if (args > params) {
+            printError("Error: Demasiados argumentos, se esperaban " + params);
+        }
+    }
+
+    private boolean attemptTypeConversion(SymbolTable.DataType target, SymbolTable.DataType type) {
+        switch (target) {
+            case INTEGER:
+                if (type == SymbolTable.DataType.DECIMAL || type == SymbolTable.DataType.CHARACTER) {
+                    return true;
+                }
+                break;
+            case DECIMAL:
+                if (type == SymbolTable.DataType.INTEGER || type == SymbolTable.DataType.CHARACTER) {
+                    return true;
+                }
+                break;
+            case CHARACTER:
+                if (type == SymbolTable.DataType.INTEGER) {
+                    return true;
+                }
+                break;
+            case STRING:
+                if (type == SymbolTable.DataType.CHARACTER) {
+                    return true;
+                }
+                break;
+            case BOOLEAN:
+                break;
+        }
+        return false;
     }
 
     private void printError(String error) {
