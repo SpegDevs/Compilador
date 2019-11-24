@@ -25,8 +25,9 @@ public class Lexicon {
         reservedWordsTokens.put("arr", new Token(Tag.ARRAY));
 
         reservedWordsTokens.put("if", new Token(Tag.IF));
-        reservedWordsTokens.put("while", new Token(Tag.WHILE));
         reservedWordsTokens.put("ifnot", new Token(Tag.IFNOT));
+        reservedWordsTokens.put("else", new Token(Tag.ELSE));
+        reservedWordsTokens.put("while", new Token(Tag.WHILE));
         reservedWordsTokens.put("do", new Token(Tag.DO));
         reservedWordsTokens.put("for", new Token(Tag.FOR));
         reservedWordsTokens.put("ret", new Token(Tag.RETURN));
@@ -49,10 +50,17 @@ public class Lexicon {
 
         reservedWordsTokens.put("out", new Token(Tag.OUT));
         reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
-        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
-        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
-        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
-        reservedWordsTokens.put("inInt", new Token(Tag.IN_INT));
+        reservedWordsTokens.put("inDec", new Token(Tag.IN_DEC));
+        reservedWordsTokens.put("inCha", new Token(Tag.IN_CHA));
+        reservedWordsTokens.put("inStr", new Token(Tag.IN_STR));
+        reservedWordsTokens.put("inBoo", new Token(Tag.IN_BOO));
+
+        reservedWordsTokens.put("fileWrite", new Token(Tag.FILE_WRITE));
+        reservedWordsTokens.put("fileReadInt", new Token(Tag.FILE_READ_INT));
+        reservedWordsTokens.put("fileReadDec", new Token(Tag.FILE_READ_DEC));
+        reservedWordsTokens.put("fileReadCha", new Token(Tag.FILE_READ_CHA));
+        reservedWordsTokens.put("fileReadStr", new Token(Tag.FILE_READ_STR));
+        reservedWordsTokens.put("fileReadBoo", new Token(Tag.FILE_READ_BOO));
     }
 
     private static void initializeSpecialSymbols(){

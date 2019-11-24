@@ -340,7 +340,21 @@ public class Parser {
         block();
         int jumpToExit = pCodeGenerator.generateJump();
         pCodeGenerator.setJumpLocation(jumpToElse);
-        if (matches(Tag.IFNOT)) {
+        if (matches(Tag.ELSE)) {
+            block();
+        }
+        pCodeGenerator.setJumpLocation(jumpToExit);
+    }
+
+    private void ifnotBlock() {
+        matches(Tag.L_PARENTHESIS, "(");
+        conditions();
+        matches(Tag.R_PARENTHESIS, ")");
+        int jumpToElse = pCodeGenerator.generateInverseJump();
+        block();
+        int jumpToExit = pCodeGenerator.generateJump();
+        pCodeGenerator.setJumpLocation(jumpToElse);
+        if (matches(Tag.ELSE)) {
             block();
         }
         pCodeGenerator.setJumpLocation(jumpToExit);
@@ -392,6 +406,8 @@ public class Parser {
             matches(Tag.SEMICOLON, ";");
         } else if (matches(Tag.IF)) {
             ifBlock();
+        } else if (matches(Tag.IFNOT)) {
+            ifnotBlock();
         } else if (matches(Tag.FOR)) {
             forBlock();
         } else if (matches(Tag.WHILE)) {

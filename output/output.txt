@@ -12,9 +12,6 @@ x -> IDENTIFIER
 int -> INT
 i -> IDENTIFIER
 ; -> SEMICOLON
-str -> STR
-s -> IDENTIFIER
-; -> SEMICOLON
 function -> FUNCTION
 int -> INT
 suma -> IDENTIFIER
@@ -100,6 +97,12 @@ suma -> IDENTIFIER
 5 -> INTEGER
 ) -> R_PARENTHESIS
 ) -> R_PARENTHESIS
+; -> SEMICOLON
+x -> IDENTIFIER
+= -> EQUAL
+5 -> INTEGER
++ -> PLUS
+7.8 -> DECIMAL
 ; -> SEMICOLON
 call -> CALL
 ( -> L_PARENTHESIS
