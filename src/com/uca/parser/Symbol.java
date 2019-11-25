@@ -8,6 +8,7 @@ public class Symbol {
     private int level;
     private int address;
     private int params;
+    private boolean initialized;
 
     public Symbol(String name, SymbolTable.Type type, SymbolTable.DataType dataType, int level, int address) {
         this.name = name;
@@ -63,5 +64,13 @@ public class Symbol {
 
     public void setParams(int params) {
         this.params = params;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 }

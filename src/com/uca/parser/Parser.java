@@ -438,6 +438,7 @@ public class Parser {
             pCodeGenerator.generateAssignmentOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
         } else {
             pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+            s.setInitialized(true);
         }
     }
 
@@ -616,7 +617,11 @@ public class Parser {
             if (s.getType() == SymbolTable.Type.ARRAY) {
                 pCodeGenerator.generateVariableOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
             } else {
-                pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+                if (s.isInitialized()) {
+                    pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+                }else{
+                    printError("Error: No se ha inicializado la variable "+s.getName());
+                }
             }
             type = s.getDataType();
         } else if (matches(Tag.L_PARENTHESIS)) {
