@@ -1,12 +1,13 @@
 arr[int, 5] a;
 int x;
 int i;
+str s;
 
 function int suma(int n){
     int r;
     if (n == 0){
         r = 0;
-    }ifnot{
+    }else{
         r = a[n-1]+call(suma(n-1));
     }
     ret r;
@@ -18,5 +19,5 @@ while (i<5){
     i = i+1;
 }
 x = call(suma(5));
-x = 5+7.8;
-call(out(x));
+s = "Resultado: "+x;
+call(out(s));

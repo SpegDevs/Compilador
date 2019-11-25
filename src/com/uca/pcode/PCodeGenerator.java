@@ -188,6 +188,26 @@ public class PCodeGenerator {
         generate(new PInstruction(PCode.OPR, type, 29));
     }
 
+    public void generateCastToInt(){
+        generate(new PInstruction(PCode.OPR, 0, 30));
+    }
+
+    public void generateCastToDec(){
+        generate(new PInstruction(PCode.OPR, 1, 30));
+    }
+
+    public void generateCastToCha(){
+        generate(new PInstruction(PCode.OPR, 2, 30));
+    }
+
+    public void generateCastToStr(){
+        generate(new PInstruction(PCode.OPR, 3, 30));
+    }
+
+    public void generateCastToBoo(){
+        generate(new PInstruction(PCode.OPR, 4, 30));
+    }
+
     public int generateConditionalJump(){
         generate(new PInstruction(PCode.SAC, 0, 0));
         return ip;

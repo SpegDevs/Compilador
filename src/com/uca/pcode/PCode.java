@@ -13,6 +13,5 @@ public enum PCode {
     ALO,
     CAO,
     PAR,
-    RET,
-    CAS
+    RET
 }

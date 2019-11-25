@@ -1,0 +1,13 @@
+dec x1;
+dec x2;
+
+call(out("Ingrese un numero: "));
+x1 = call(inDec());
+call(out("Ingrese otro numero: "));
+x2 = call(inDec());
+if (x1 == x2){
+    call(out("Son iguales"));
+}
+ifnot(x1 == x2){
+    call(out("No son iguales"));
+}

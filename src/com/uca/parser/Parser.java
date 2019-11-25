@@ -20,7 +20,7 @@ public class Parser {
     private Stack<SymbolTable> symbolTables = new Stack<>();
     private SymbolTable.Type type;
     private SymbolTable.DataType dataType;
-    private int offset;
+    private int offset = 1;
 
     private PCodeGenerator pCodeGenerator;
 
@@ -725,21 +725,21 @@ public class Parser {
         switch (target) {
             case INTEGER:
                 if (type == SymbolTable.DataType.DECIMAL || type == SymbolTable.DataType.CHARACTER) {
+                    pCodeGenerator.generateCastToInt();
                     return true;
                 }
                 break;
             case DECIMAL:
-                if (type == SymbolTable.DataType.INTEGER || type == SymbolTable.DataType.CHARACTER) {
+                if (type == SymbolTable.DataType.INTEGER) {
+                    pCodeGenerator.generateCastToDec();
                     return true;
                 }
                 break;
             case CHARACTER:
-                if (type == SymbolTable.DataType.INTEGER) {
-                    return true;
-                }
                 break;
             case STRING:
                 if (type == SymbolTable.DataType.CHARACTER) {
+                    pCodeGenerator.generateCastToStr();
                     return true;
                 }
                 break;
