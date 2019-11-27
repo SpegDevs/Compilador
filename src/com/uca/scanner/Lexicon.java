@@ -61,6 +61,7 @@ public class Lexicon {
         reservedWordsTokens.put("fileReadCha", new Token(Tag.FILE_READ_CHA));
         reservedWordsTokens.put("fileReadStr", new Token(Tag.FILE_READ_STR));
         reservedWordsTokens.put("fileReadBoo", new Token(Tag.FILE_READ_BOO));
+        reservedWordsTokens.put("fileClear", new Token(Tag.FILE_CLEAR));
     }
 
     private static void initializeSpecialSymbols(){

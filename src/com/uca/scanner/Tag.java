@@ -57,6 +57,7 @@ public enum Tag {
     FILE_READ_CHA,
     FILE_READ_STR,
     FILE_READ_BOO,
+    FILE_CLEAR,
 
     //Caracteres Especiales
     EQUAL,

@@ -6,4 +6,5 @@ infile = "input.txt";
 outfile = "output.txt";
 x = call(fileReadDec(infile));
 x = x*5;
+call(fileClear(outfile));
 call(fileWrite(outfile, x));

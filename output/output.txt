@@ -33,6 +33,14 @@ x -> IDENTIFIER
 ; -> SEMICOLON
 call -> CALL
 ( -> L_PARENTHESIS
+fileClear -> FILE_CLEAR
+( -> L_PARENTHESIS
+outfile -> IDENTIFIER
+) -> R_PARENTHESIS
+) -> R_PARENTHESIS
+; -> SEMICOLON
+call -> CALL
+( -> L_PARENTHESIS
 fileWrite -> FILE_WRITE
 ( -> L_PARENTHESIS
 outfile -> IDENTIFIER

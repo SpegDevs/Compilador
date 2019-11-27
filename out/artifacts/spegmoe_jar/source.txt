@@ -1,6 +1,0 @@
-.-int Mamarre(dec valor){
-    .|. comentario
-    ret Ceil(valor);
-}-.^&
-HolaMundo = out("hola mundo");
-int a = 5+123456;

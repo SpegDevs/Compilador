@@ -214,11 +214,13 @@ public class Parser {
             }catch (ParserException e){
                 stabilize(Sets.Struct.ARGUMENTS);
             }
-            checkFunctionCall(s.getParams(), args);
-            pCodeGenerator.generateParams(args);
+            if (s != null) {
+                checkFunctionCall(s.getParams(), args);
+                pCodeGenerator.generateParams(args);
+                pCodeGenerator.generateCall(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+                type = s.getDataType();
+            }
             matches(Tag.R_PARENTHESIS, ")");
-            pCodeGenerator.generateCall(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-            type = s.getDataType();
         } else if (builtInFunction()) {
             Token fun = lastToken;
             int args = arguments();
@@ -334,6 +336,11 @@ public class Parser {
                     pCodeGenerator.generateFileRead(4);
                     type = SymbolTable.DataType.BOOLEAN;
                     break;
+                case FILE_CLEAR:
+                    checkFunctionCall(1, args);
+                    pCodeGenerator.generateFileClear();
+                    type = SymbolTable.DataType.VOID;
+                    break;
             }
         } else {
             printError("Error: Call debe ir seguido de un identificador");
@@ -399,7 +406,7 @@ public class Parser {
         if (matches(Tag.OUT) || matches(Tag.IN_INT) || matches(Tag.IN_DEC) || matches(Tag.IN_CHA) || matches(Tag.IN_STR) || matches(Tag.IN_BOO)) {
             return true;
         }
-        if (matches(Tag.FILE_OPEN) || matches(Tag.FILE_WRITE) || matches(Tag.FILE_READ_INT) || matches(Tag.FILE_READ_DEC) || matches(Tag.FILE_READ_CHA) || matches(Tag.FILE_READ_STR) || matches(Tag.FILE_READ_BOO)) {
+        if (matches(Tag.FILE_OPEN) || matches(Tag.FILE_WRITE) || matches(Tag.FILE_READ_INT) || matches(Tag.FILE_READ_DEC) || matches(Tag.FILE_READ_CHA) || matches(Tag.FILE_READ_STR) || matches(Tag.FILE_READ_BOO) || matches(Tag.FILE_CLEAR)) {
             return true;
         }
         return false;
@@ -793,16 +800,18 @@ public class Parser {
             type = SymbolTable.DataType.BOOLEAN;
         } else if (location()) {
             Symbol s = symbolTables.peek().get(auxToken.getLexeme());
-            if (s.getType() == SymbolTable.Type.ARRAY) {
-                pCodeGenerator.generateVariableOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-            } else {
-                if (s.isInitialized()) {
-                    pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-                }else{
-                    printError("Error: No se ha inicializado la variable "+s.getName());
+            if (s != null) {
+                if (s.getType() == SymbolTable.Type.ARRAY) {
+                    pCodeGenerator.generateVariableOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+                } else {
+                    if (s.isInitialized()) {
+                        pCodeGenerator.generateVariable(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+                    } else {
+                        printError("Error: No se ha inicializado la variable " + s.getName());
+                    }
                 }
+                type = s.getDataType();
             }
-            type = s.getDataType();
         } else if (matches(Tag.L_PARENTHESIS)) {
             try {
                 type = expression();
