@@ -21,6 +21,7 @@ public class Parser {
     private SymbolTable.Type type;
     private SymbolTable.DataType dataType;
     private int offset = 1;
+    private boolean errors = false;
 
     private PCodeGenerator pCodeGenerator;
 
@@ -31,43 +32,75 @@ public class Parser {
 
     public void parse() {
         getToken();
-        program();
+        try {
+            program();
+        } catch (ParserException e) {
+            Main.close();
+        }
         printSymbolTable();
         pCodeGenerator.printPCode();
-        pCodeGenerator.savePCode();
+        if (!errors){
+            pCodeGenerator.savePCode();
+        }else{
+            System.out.println("Hay errores de compilacion");
+        }
     }
 
-    private void program() {
+    private void program() throws ParserException{
         symbolTables.push(new SymbolTable(null));
         int jumpToMain = pCodeGenerator.generateJump();
-        declarations();
-        functions();
+        try {
+            declarations();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.DECLARATIONS);
+        }
+        try {
+            functions();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.FUNCTIONS);
+        }
         pCodeGenerator.setJumpLocation(jumpToMain);
-        main();
+        try{
+            main();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.STATEMENTS);
+        }
     }
 
-    private void main() {
+    private void main() throws ParserException {
         pCodeGenerator.generateAllocate(symbolTables.peek().getnVariables());
         while (!scanner.isEndOfFile()) {
-            statement();
+            try {
+                statement();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.STATEMENT);
+            }
         }
     }
 
-    private void block() {
+    private void block() throws ParserException {
         matches(Tag.L_BRACE, "{");
         while (!matches(Tag.R_BRACE)) {
-            statement();
+            try {
+                statement();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.STATEMENT);
+            }
         }
     }
 
-    private void declarations() {
+    private void declarations() throws ParserException {
         while (type()) {
-            declaration();
+            try {
+                declaration();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.DECLARATION);
+            }
             matches(Tag.SEMICOLON, ";");
         }
     }
 
-    private void declaration() {
+    private void declaration() throws ParserException {
         type();
         if (!matches(Tag.IDENTIFIER)) {
             printError("Error: Debe ser identificador " + lastToken.getLexeme());
@@ -76,7 +109,7 @@ public class Parser {
         offset = 1;
     }
 
-    private boolean type() {
+    private boolean type() throws ParserException {
         if (basicType()) {
             this.type = SymbolTable.Type.VARIABLE;
             return true;
@@ -117,7 +150,7 @@ public class Parser {
         return false;
     }
 
-    private void functions() {
+    private void functions() throws ParserException {
         while (matches(Tag.FUNCTION)) {
             if (!type()){
                 printError("Error: Se esperaba un tipo de dato");
@@ -131,25 +164,41 @@ public class Parser {
             if (s != null) {
                 s.setParams(params);
             }
-            functionBlock();
+            try {
+                functionBlock();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.FUNCTIONBLOCK);
+            }
             removeSymbolTable();
         }
     }
 
-    private void functionBlock() {
+    private void functionBlock() throws ParserException {
         matches(Tag.L_BRACE, "{");
-        declarations();
+        try {
+            declarations();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.DECLARATIONS);
+        }
         pCodeGenerator.generateAllocate(symbolTables.peek().getnVariables());
         while (!matches(Tag.RETURN)) {
-            statement();
+            try {
+                statement();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.STATEMENT);
+            }
         }
-        expression();
+        try {
+            expression();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.EXPRESSION);
+        }
         matches(Tag.SEMICOLON, ";");
         matches(Tag.R_BRACE, "}");
         pCodeGenerator.generateReturn();
     }
 
-    private SymbolTable.DataType functionCall() {
+    private SymbolTable.DataType functionCall() throws ParserException {
         SymbolTable.DataType type = SymbolTable.DataType.VOID;
         matches(Tag.L_PARENTHESIS, "(");
         if (matches(Tag.IDENTIFIER)) {
@@ -159,7 +208,12 @@ public class Parser {
             } else if (s.getType() != SymbolTable.Type.FUNCTION) {
                 printError("Error: Identificador " + lastToken.getLexeme() + " debe ser funcion");
             }
-            int args = arguments();
+            int args = 0;
+            try{
+                args = arguments();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.ARGUMENTS);
+            }
             checkFunctionCall(s.getParams(), args);
             pCodeGenerator.generateParams(args);
             matches(Tag.R_PARENTHESIS, ")");
@@ -283,36 +337,53 @@ public class Parser {
             }
         } else {
             printError("Error: Call debe ir seguido de un identificador");
+            throw new ParserException();
         }
         return type;
     }
 
-    private int parameters() {
+    private int parameters() throws ParserException {
         int count = 0;
         matches(Tag.L_PARENTHESIS, "(");
         if (matches(Tag.R_PARENTHESIS)) {
             return 0;
         }
-        declaration();
+        try {
+            declaration();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.DECLARATION);
+        }
         count++;
         while (matches(Tag.COLON)) {
-            declaration();
+            try {
+                declaration();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.DECLARATION);
+            }
             count++;
         }
         matches(Tag.R_PARENTHESIS, ")");
         return count;
     }
 
-    private int arguments() {
+    private int arguments() throws ParserException {
         int count = 0;
         matches(Tag.L_PARENTHESIS, "(");
         if (matches(Tag.R_PARENTHESIS)) {
             return 0;
         }
-        expression();
+        try {
+            expression();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.EXPRESSION);
+        }
         count++;
         while (matches(Tag.COLON)) {
-            expression();
+            try {
+                expression();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.EXPRESSION);
+            }
             count++;
         }
         matches(Tag.R_PARENTHESIS, ")");
@@ -332,45 +403,73 @@ public class Parser {
         return false;
     }
 
-    private void ifBlock() {
+    private void ifBlock() throws ParserException{
         matches(Tag.L_PARENTHESIS, "(");
-        conditions();
+        try {
+            conditions();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.CONDITIONS);
+        }
         matches(Tag.R_PARENTHESIS, ")");
         int jumpToElse = pCodeGenerator.generateConditionalJump();
         block();
         int jumpToExit = pCodeGenerator.generateJump();
         pCodeGenerator.setJumpLocation(jumpToElse);
-        if (matches(Tag.ELSE)) {
-            block();
+        try {
+            if (matches(Tag.ELSE)) {
+                block();
+            }
+        } catch (ParserException e){
+            stabilize(Sets.Struct.ELSE);
         }
         pCodeGenerator.setJumpLocation(jumpToExit);
     }
 
-    private void ifnotBlock() {
+    private void ifnotBlock() throws ParserException {
         matches(Tag.L_PARENTHESIS, "(");
-        conditions();
+        try {
+            conditions();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.CONDITIONS);
+        }
         matches(Tag.R_PARENTHESIS, ")");
         int jumpToElse = pCodeGenerator.generateInverseJump();
         block();
         int jumpToExit = pCodeGenerator.generateJump();
         pCodeGenerator.setJumpLocation(jumpToElse);
-        if (matches(Tag.ELSE)) {
-            block();
+        try {
+            if (matches(Tag.ELSE)) {
+                block();
+            }
+        } catch (ParserException e){
+            stabilize(Sets.Struct.ELSE);
         }
         pCodeGenerator.setJumpLocation(jumpToExit);
     }
 
-    private void forBlock() {
+    private void forBlock() throws ParserException {
         matches(Tag.L_PARENTHESIS, "(");
-        assignment();
+        try {
+            assignment();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.ASSIGNMENT);
+        }
         int conditionLocation = pCodeGenerator.getIp();
         matches(Tag.SEMICOLON, ";");
-        conditions();
+        try {
+            conditions();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.CONDITIONS);
+        }
         int jumpToExit = pCodeGenerator.generateConditionalJump();
         int jumpToBody = pCodeGenerator.generateJump();
         matches(Tag.SEMICOLON, ";");
         int assignmentLocation = pCodeGenerator.getIp();
-        assignment();
+        try {
+            assignment();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.ASSIGNMENT);
+        }
         pCodeGenerator.generateJump(conditionLocation);
         matches(Tag.R_PARENTHESIS, ")");
         pCodeGenerator.setJumpLocation(jumpToBody);
@@ -379,10 +478,14 @@ public class Parser {
         pCodeGenerator.setJumpLocation(jumpToExit);
     }
 
-    private void whileBlock() {
+    private void whileBlock() throws ParserException {
         int conditionLocation = pCodeGenerator.getIp();
         matches(Tag.L_PARENTHESIS, "(");
-        conditions();
+        try {
+            conditions();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.CONDITIONS);
+        }
         matches(Tag.R_PARENTHESIS, ")");
         int jumpTpExit = pCodeGenerator.generateConditionalJump();
         block();
@@ -390,45 +493,84 @@ public class Parser {
         pCodeGenerator.setJumpLocation(jumpTpExit);
     }
 
-    private void doWhileBlock() {
+    private void doWhileBlock() throws ParserException {
         int startLocation = pCodeGenerator.getIp();
         block();
         matches(Tag.WHILE, "while");
         matches(Tag.L_PARENTHESIS, "(");
-        conditions();
+        try {
+            conditions();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.CONDITIONS);
+        }
         matches(Tag.R_PARENTHESIS, ")");
         pCodeGenerator.generateInverseJump(startLocation);
     }
 
-    private void statement() {
+    private void statement() throws ParserException{
         if (location()) {
-            assignment();
-            matches(Tag.SEMICOLON, ";");
+            try {
+                assignment();
+                matches(Tag.SEMICOLON, ";");
+            }catch (ParserException e){
+                stabilize(Sets.Struct.ASSIGNMENT);
+            }
         } else if (matches(Tag.IF)) {
-            ifBlock();
+            try {
+                ifBlock();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.IF);
+            }
         } else if (matches(Tag.IFNOT)) {
-            ifnotBlock();
+            try {
+                ifnotBlock();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.IFNOT);
+            }
         } else if (matches(Tag.FOR)) {
-            forBlock();
+            try {
+                forBlock();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.FOR);
+            }
         } else if (matches(Tag.WHILE)) {
-            whileBlock();
+            try {
+                whileBlock();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.WHILE);
+            }
         } else if (matches(Tag.DO)) {
-            doWhileBlock();
+            try {
+                doWhileBlock();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.DOWHILE);
+            }
         } else if (matches(Tag.CALL)) {
-            functionCall();
-            matches(Tag.SEMICOLON, ";");
+            try {
+                functionCall();
+                matches(Tag.SEMICOLON, ";");
+            }catch (ParserException e){
+                stabilize(Sets.Struct.FUNCTIONCALL);
+            }
         } else {
             printError("Error: No es instruccion " + token.getLexeme());
+            throw new ParserException();
         }
     }
 
-    private void assignment() {
+    private void assignment() throws ParserException{
         location();
         Symbol s = getSymbol(auxToken.getLexeme());
         if (!matches(Tag.EQUAL)) {
             printError("Error: Se esperaba operador de asignacion =");
+            throw new ParserException();
         }
-        SymbolTable.DataType type = expression();
+        SymbolTable.DataType type = null;
+        try {
+            type = expression();
+        }catch (ParserException e){
+            stabilize(Sets.Struct.EXPRESSION);
+        }
         if (type != s.getDataType()) {
             if (!attemptTypeConversion(s.getDataType(), type)) {
                 printError("Error: Se esperaba un valor de tipo " + s.getDataType().toString() + ", se enconto " + type.toString());
@@ -442,11 +584,19 @@ public class Parser {
         }
     }
 
-    private void conditions() {
-        condition();
+    private void conditions() throws ParserException{
+        try {
+            condition();
+        }catch (ParserException e) {
+            stabilize(Sets.Struct.CONDITION);
+        }
         while (matches(Tag.AND) || matches(Tag.OR)) {
             Token op = lastToken;
-            condition();
+            try {
+                condition();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.CONDITION);
+            }
             if (op.getTag() == Tag.AND) {
                 pCodeGenerator.generateAnd();
             } else {
@@ -455,11 +605,25 @@ public class Parser {
         }
     }
 
-    private SymbolTable.DataType condition() {
-        SymbolTable.DataType type1 = expression();
-        relational();
+    private SymbolTable.DataType condition() throws ParserException{
+        SymbolTable.DataType type1 = null;
+        try {
+             type1 = expression();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.EXPRESSION);
+        }
+        try {
+            relational();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.RELATIONALOP);
+        }
         Token op = lastToken;
-        SymbolTable.DataType type2 = expression();
+        SymbolTable.DataType type2 = null;
+        try {
+            type2 = expression();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.EXPRESSION);
+        }
         if (type1 != type2) {
             if (!attemptTypeConversion(type1, type2)) {
                 printError("Error: Operador " + op.getTag() + " esperaba valores del mismo tipo " + type1.toString());
@@ -488,15 +652,16 @@ public class Parser {
         return SymbolTable.DataType.BOOLEAN;
     }
 
-    private void relational() {
+    private void relational() throws ParserException{
         if (matches(Tag.EQUAL_EQUAL) || matches(Tag.NOT_EQUAL) || matches(Tag.LESS_THAN) || matches(Tag.LESS_THAN_EQUAL) || matches(Tag.GREATER_THAN) || matches(Tag.GREATER_THAN_EQUAL)) {
 
         } else {
             printError("Error: " + token.getLexeme() + " no es operador relacional");
+            throw new ParserException();
         }
     }
 
-    private SymbolTable.DataType expression() {
+    private SymbolTable.DataType expression() throws ParserException{
         SymbolTable.DataType type = SymbolTable.DataType.VOID;
         SymbolTable.DataType type2 = SymbolTable.DataType.VOID;
         type = term();
@@ -536,13 +701,21 @@ public class Parser {
         return type;
     }
 
-    private SymbolTable.DataType term() {
+    private SymbolTable.DataType term() throws ParserException{
         SymbolTable.DataType type = SymbolTable.DataType.VOID;
         SymbolTable.DataType type2 = SymbolTable.DataType.VOID;
-        type = unary();
+        try {
+            type = unary();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.UNARY);
+        }
         while (matches(Tag.MULTIPLICATION) || matches(Tag.DIVISION)) {
             Token op = lastToken;
-            type2 = unary();
+            try {
+                type2 = unary();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.UNARY);
+            }
             if (op.getTag() == Tag.MULTIPLICATION) {
                 pCodeGenerator.generateMultiplication();
             } else {
@@ -563,13 +736,17 @@ public class Parser {
         return type;
     }
 
-    private SymbolTable.DataType unary() {
+    private SymbolTable.DataType unary() throws ParserException {
         SymbolTable.DataType type = SymbolTable.DataType.VOID;
         Token op = null;
         if (matches(Tag.MINUS) || matches(Tag.PLUS) || matches(Tag.NOT)) {
             op = lastToken;
         }
-        type = factor();
+        try {
+            type = factor();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.FACTOR);
+        }
         if (op != null) {
             switch (op.getTag()) {
                 case MINUS:
@@ -595,7 +772,7 @@ public class Parser {
         return type;
     }
 
-    private SymbolTable.DataType factor() {
+    private SymbolTable.DataType factor() throws ParserException {
         SymbolTable.DataType type = SymbolTable.DataType.VOID;
         if (matches(Tag.INTEGER)) {
             pCodeGenerator.generateValue(((TokenValue<Integer>) lastToken).getValue());
@@ -625,17 +802,25 @@ public class Parser {
             }
             type = s.getDataType();
         } else if (matches(Tag.L_PARENTHESIS)) {
-            type = expression();
+            try {
+                type = expression();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.EXPRESSION);
+            }
             matches(Tag.R_PARENTHESIS, ")");
         } else if (matches(Tag.CALL)) {
-            type = functionCall();
+            try {
+                type = functionCall();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.FUNCTIONCALL);
+            }
         } else {
             printError("Error: " + token.getLexeme() + " no es factor");
         }
         return type;
     }
 
-    private boolean location() {
+    private boolean location() throws ParserException {
         if (matches(Tag.IDENTIFIER)) {
             Symbol symbol = getSymbol(lastToken.getLexeme());
             Token saveToken = lastToken;
@@ -654,7 +839,7 @@ public class Parser {
         return false;
     }
 
-    private void arrayOperator() {
+    private void arrayOperator() throws ParserException {
         matches(Tag.L_BRACKET, "[");
         expression();
         matches(Tag.R_BRACKET, "]");
@@ -676,13 +861,14 @@ public class Parser {
         return false;
     }
 
-    private boolean matches(Tag tag, String symbol) {
+    private boolean matches(Tag tag, String symbol) throws ParserException{
         if (is(tag)) {
             getToken();
             return true;
         }
         printError("Error: Se esperaba " + symbol);
-        return false;
+        throw new ParserException();
+        //return false;
     }
 
     private void getToken() {
@@ -754,9 +940,21 @@ public class Parser {
         return false;
     }
 
+    private void stabilize(Sets.Struct struct){
+        int[] set = Sets.getStabilizationSet(struct);
+        getToken();
+        while (set[token.getTag().ordinal()] != 1){
+            getToken();
+            if (token.getTag() == Tag.NULL){
+                break;
+            }
+        }
+    }
+
     private void printError(String error) {
         ErrorLog.logError(error.concat(" Line: " + token.getLine()));
-        Main.close();
+        errors = true;
+        //Main.close();
     }
 
     private void printSymbolTable() {
