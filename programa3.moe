@@ -1,0 +1,9 @@
+str infile;
+str outfile;
+dec x;
+
+infile = "input.txt";
+outfile = "output.txt";
+x = call(fileReadDec(infile));
+x = x*5;
+call(fileWrite(outfile, x));

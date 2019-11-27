@@ -350,6 +350,7 @@ public class Parser {
         }
         try {
             declaration();
+            getSymbol(lastToken.getLexeme()).setInitialized(true);
         } catch (ParserException e){
             stabilize(Sets.Struct.DECLARATION);
         }
@@ -357,6 +358,7 @@ public class Parser {
         while (matches(Tag.COLON)) {
             try {
                 declaration();
+                getSymbol(lastToken.getLexeme()).setInitialized(true);
             } catch (ParserException e){
                 stabilize(Sets.Struct.DECLARATION);
             }

@@ -1,0 +1,16 @@
+SAL 0 1
+INS 0 6
+LIT 3 "input.txt"
+ALM 0 3
+LIT 3 "output.txt"
+ALM 0 4
+CAR 0 3
+OPR 1 29
+ALM 0 5
+CAR 0 5
+LIT 0 5
+OPR 0 5
+ALM 0 5
+CAR 0 4
+CAR 0 5
+OPR 0 28
