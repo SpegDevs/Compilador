@@ -80,7 +80,7 @@ public class Parser {
 
     private void block() throws ParserException {
         matches(Tag.L_BRACE, "{");
-        while (!matches(Tag.R_BRACE)) {
+        while (!matches(Tag.R_BRACE) && !scanner.isEndOfFile()) {
             try {
                 statement();
             } catch (ParserException e){
@@ -90,7 +90,7 @@ public class Parser {
     }
 
     private void declarations() throws ParserException {
-        while (type()) {
+        while (type() && !scanner.isEndOfFile()) {
             try {
                 declaration();
             } catch (ParserException e){
@@ -151,7 +151,7 @@ public class Parser {
     }
 
     private void functions() throws ParserException {
-        while (matches(Tag.FUNCTION)) {
+        while (matches(Tag.FUNCTION) && !scanner.isEndOfFile()) {
             if (!type()){
                 printError("Error: Se esperaba un tipo de dato");
             }
@@ -181,7 +181,7 @@ public class Parser {
             stabilize(Sets.Struct.DECLARATIONS);
         }
         pCodeGenerator.generateAllocate(symbolTables.peek().getnVariables());
-        while (!matches(Tag.RETURN)) {
+        while (!matches(Tag.RETURN) && !scanner.isEndOfFile()) {
             try {
                 statement();
             } catch (ParserException e){
@@ -223,7 +223,12 @@ public class Parser {
             matches(Tag.R_PARENTHESIS, ")");
         } else if (builtInFunction()) {
             Token fun = lastToken;
-            int args = arguments();
+            int args = 0;
+            try{
+                args = arguments();
+            }catch (ParserException e){
+                stabilize(Sets.Struct.ARGUMENTS);
+            }
             matches(Tag.R_PARENTHESIS, ")");
             switch (fun.getTag()) {
                 case MAX:
@@ -362,7 +367,7 @@ public class Parser {
             stabilize(Sets.Struct.DECLARATION);
         }
         count++;
-        while (matches(Tag.COLON)) {
+        while (matches(Tag.COLON) && !scanner.isEndOfFile()) {
             try {
                 declaration();
                 getSymbol(lastToken.getLexeme()).setInitialized(true);
@@ -387,7 +392,7 @@ public class Parser {
             stabilize(Sets.Struct.EXPRESSION);
         }
         count++;
-        while (matches(Tag.COLON)) {
+        while (matches(Tag.COLON) && !scanner.isEndOfFile()) {
             try {
                 expression();
             } catch (ParserException e){
@@ -563,6 +568,7 @@ public class Parser {
             }
         } else {
             printError("Error: No es instruccion " + token.getLexeme());
+            getToken();
             throw new ParserException();
         }
     }
@@ -580,16 +586,18 @@ public class Parser {
         }catch (ParserException e){
             stabilize(Sets.Struct.EXPRESSION);
         }
-        if (type != s.getDataType()) {
-            if (!attemptTypeConversion(s.getDataType(), type)) {
-                printError("Error: Se esperaba un valor de tipo " + s.getDataType().toString() + ", se enconto " + type.toString());
+        if (s != null) {
+            if (type != s.getDataType()) {
+                if (!attemptTypeConversion(s.getDataType(), type)) {
+                    printError("Error: Se esperaba un valor de tipo " + s.getDataType().toString() + ", se enconto " + type.toString());
+                }
             }
-        }
-        if (s.getType() == SymbolTable.Type.ARRAY) {
-            pCodeGenerator.generateAssignmentOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-        } else {
-            pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
-            s.setInitialized(true);
+            if (s.getType() == SymbolTable.Type.ARRAY) {
+                pCodeGenerator.generateAssignmentOffset(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+            } else {
+                pCodeGenerator.generateAssignment(symbolTables.peek().getLevel() - s.getLevel(), s.getAddress());
+                s.setInitialized(true);
+            }
         }
     }
 
@@ -599,7 +607,7 @@ public class Parser {
         }catch (ParserException e) {
             stabilize(Sets.Struct.CONDITION);
         }
-        while (matches(Tag.AND) || matches(Tag.OR)) {
+        while (matches(Tag.AND) || matches(Tag.OR) && !scanner.isEndOfFile()) {
             Token op = lastToken;
             try {
                 condition();
@@ -673,10 +681,18 @@ public class Parser {
     private SymbolTable.DataType expression() throws ParserException{
         SymbolTable.DataType type = SymbolTable.DataType.VOID;
         SymbolTable.DataType type2 = SymbolTable.DataType.VOID;
-        type = term();
-        while (matches(Tag.PLUS) || matches(Tag.MINUS)) {
+        try {
+            type = term();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.TERM);
+        }
+        while (matches(Tag.PLUS) || matches(Tag.MINUS) && !scanner.isEndOfFile()) {
             Token op = lastToken;
-            type2 = term();
+            try {
+                type2 = term();
+            } catch (ParserException e){
+                stabilize(Sets.Struct.TERM);
+            }
             if (op.getTag() == Tag.PLUS) {
                 if (type != SymbolTable.DataType.INTEGER && type != SymbolTable.DataType.DECIMAL && type != SymbolTable.DataType.STRING) {
                     printError("Error: Operador " + op.getLexeme() + " no se puede aplicar a " + type.toString());
@@ -718,7 +734,7 @@ public class Parser {
         } catch (ParserException e){
             stabilize(Sets.Struct.UNARY);
         }
-        while (matches(Tag.MULTIPLICATION) || matches(Tag.DIVISION)) {
+        while (matches(Tag.MULTIPLICATION) || matches(Tag.DIVISION) && !scanner.isEndOfFile()) {
             Token op = lastToken;
             try {
                 type2 = unary();
@@ -839,7 +855,11 @@ public class Parser {
             if (symbol == null) {
                 printError("Error: No se ha declarado la variable " + lastToken.getLexeme());
             } else if (symbol.getType() == SymbolTable.Type.ARRAY) {
-                arrayOperator();
+                try {
+                    arrayOperator();
+                }catch(ParserException e){
+                    stabilize(Sets.Struct.ARRAYACCESS);
+                }
                 auxToken = saveToken;
                 return true;
             } else if (symbol.getType() != SymbolTable.Type.VARIABLE) {
@@ -852,7 +872,11 @@ public class Parser {
 
     private void arrayOperator() throws ParserException {
         matches(Tag.L_BRACKET, "[");
-        expression();
+        try {
+            expression();
+        } catch (ParserException e){
+            stabilize(Sets.Struct.EXPRESSION);
+        }
         matches(Tag.R_BRACKET, "]");
     }
 
@@ -953,8 +977,7 @@ public class Parser {
 
     private void stabilize(Sets.Struct struct){
         int[] set = Sets.getStabilizationSet(struct);
-        getToken();
-        while (set[token.getTag().ordinal()] != 1){
+        while (set[token.getTag().ordinal()] != 1 && !scanner.isEndOfFile()){
             getToken();
             if (token.getTag() == Tag.NULL){
                 break;
@@ -963,7 +986,9 @@ public class Parser {
     }
 
     private void printError(String error) {
-        ErrorLog.logError(error.concat(" Line: " + token.getLine()));
+        if (token.getTag() != Tag.NULL) {
+            ErrorLog.logError(error.concat(" Line: " + token.getLine()));
+        }
         errors = true;
         //Main.close();
     }

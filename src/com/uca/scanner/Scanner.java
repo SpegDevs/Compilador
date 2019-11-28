@@ -142,7 +142,7 @@ public class Scanner {
                 addToLexeme(c);
                 c = getChar();
                 if (inputFile.isEndOfFile()) {
-                    ErrorLog.logError("Error: Falta \" de cierre" + inputFile.getLineCount());
+                    ErrorLog.logError("Error: Falta \" de cierre Linea: " + inputFile.getLineCount());
                     Main.close();
                 }
             }
@@ -162,7 +162,7 @@ public class Scanner {
                     addToLexeme(c);
                     c = getChar();
                     if (inputFile.isEndOfFile()) {
-                        ErrorLog.logError("Error: Falta \' de cierre" + inputFile.getLineCount());
+                        ErrorLog.logError("Error: Falta \' de cierre Linea: " + inputFile.getLineCount());
                         Main.close();
                     }
                 }
