@@ -34,7 +34,8 @@ public class Parser {
         getToken();
         try {
             program();
-        } catch (ParserException e) {
+        } catch (Exception e) {
+            errors = true;
             Main.close();
         }
         printSymbolTable();
